@@ -9,6 +9,7 @@ const navItems = [
   { to: '/admin/tables', label: 'Tables' },
   { to: '/admin/reservations', label: 'Reservations' },
   { to: '/admin/menu', label: 'Menu' },
+  { to: '/admin/users', label: 'Users' },
 ];
 
 const MenuManagementPage = () => {

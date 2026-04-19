@@ -47,4 +47,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     List<Reservation> findByUserEmailOrderByReservationDateDescStartTimeDesc(String email);
 
     List<Reservation> findByReservationDateOrderByStartTimeAsc(LocalDate reservationDate);
+
+    List<Reservation> findByTableIdAndStatus(Long tableId, ReservationStatus status);
 }
