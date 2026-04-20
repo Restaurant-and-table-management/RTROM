@@ -1,5 +1,9 @@
 package com.rtrom.backend.service;
 
+import com.rtrom.backend.domain.model.TableStatus;
+import com.rtrom.backend.domain.model.Reservation;
+import com.rtrom.backend.domain.model.RestaurantTable;
+import com.rtrom.backend.domain.model.Order;
 import com.rtrom.backend.domain.model.User;
 import com.rtrom.backend.dto.user.UpdateRoleRequest;
 import com.rtrom.backend.dto.user.UserResponse;
@@ -55,6 +59,26 @@ public class UserService {
 
         try {
             logger.info("Attempting to delete user: {} (ID: {})", user.getEmail(), userId);
+            
+            // Fetch reservations to update table statuses before deletion
+            List<Reservation> userReservations = reservationRepository.findByUserId(userId);
+            for (Reservation res : userReservations) {
+                RestaurantTable table = res.getTable();
+                if (table != null) {
+                    logger.info("Setting table {} to AVAILABLE due to user deletion (from reservation)", table.getTableNumber());
+                    table.setStatus(TableStatus.AVAILABLE);
+                }
+            }
+
+            // Also check orders to update table statuses
+            List<Order> userOrders = orderRepository.findByUserId(userId);
+            for (Order order : userOrders) {
+                RestaurantTable table = order.getTable();
+                if (table != null && table.getStatus() != TableStatus.AVAILABLE) {
+                    logger.info("Setting table {} to AVAILABLE due to user deletion (from order)", table.getTableNumber());
+                    table.setStatus(TableStatus.AVAILABLE);
+                }
+            }
             
             // Delete associated data first to avoid integrity violations
             orderRepository.deleteByUserId(userId);

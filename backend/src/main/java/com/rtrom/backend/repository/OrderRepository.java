@@ -11,6 +11,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByTableIdAndStatusNot(Long tableId, com.rtrom.backend.domain.model.OrderStatus status);
 
+    List<Order> findByUserId(Long userId);
+
     void deleteByTableId(Long tableId);
 
     void deleteByUserId(Long userId);
