@@ -2,6 +2,7 @@ package com.rtrom.backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -47,6 +48,10 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**", "/actuator/health", "/error").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/menu-items/**").permitAll()
+                .requestMatchers("/api/v1/cart/**").authenticated()
+                .requestMatchers("/api/v1/orders/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/orders/**").authenticated()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

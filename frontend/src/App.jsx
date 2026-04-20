@@ -13,6 +13,9 @@ import KitchenPage from './pages/kitchen/KitchenPage';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import CustomerCartPage from './pages/customer/CustomerCartPage';
+import CustomerOrdersPage from './pages/customer/CustomerOrdersPage';
+import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import WaiterPage from './pages/waiter/WaiterPage';
 import { ROLES } from './utils/roleRoutes';
 
@@ -34,12 +37,15 @@ function App() {
           <Route path="/admin/tables" element={<TableManagement />} />
           <Route path="/admin/reservations" element={<ReservationManagement />} />
           <Route path="/admin/menu" element={<MenuManagementPage />} />
+          <Route path="/admin/orders" element={<AdminOrdersPage />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={[ROLES.CUSTOMER]} />}>
           <Route path="/customer" element={<ReservePage />} />
           <Route path="/customer/menu" element={<CustomerMenuPage />} />
           <Route path="/customer/reservations" element={<MyReservations />} />
+          <Route path="/customer/cart" element={<CustomerCartPage />} />
+          <Route path="/customer/orders" element={<CustomerOrdersPage />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={[ROLES.KITCHEN_STAFF]} />}>

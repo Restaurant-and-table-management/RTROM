@@ -2,16 +2,20 @@ import React, { useEffect, useState } from 'react';
 import DashboardShell from '../../components/layout/DashboardShell';
 import useMenuStore from '../../store/menuStore';
 import useCategoryStore from '../../store/categoryStore';
+import useCartStore from '../../store/useCartStore';
 
 const navItems = [
   { to: '/customer', label: 'Dashboard', end: true },
   { to: '/customer/menu', label: 'Menu' },
+  { to: '/customer/cart', label: 'My Cart' },
+  { to: '/customer/orders', label: 'My Orders' },
   { to: '/customer/reservations', label: 'Reservations' },
 ];
 
 function CustomerMenuPage() {
   const { menuItems, fetchMenuItems, isLoading } = useMenuStore();
   const { categories, fetchCategories } = useCategoryStore();
+  const { addItem, isLoading: isCartLoading } = useCartStore();
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [imgErrors, setImgErrors] = useState({});
 
@@ -26,6 +30,16 @@ function CustomerMenuPage() {
   const filteredItems = activeCategory === 'ALL' 
     ? availableItems 
     : availableItems.filter(item => item.category?.name === activeCategory);
+
+  const handleAddToCart = async (e, itemId) => {
+    e.stopPropagation();
+    try {
+      await addItem(itemId, 1);
+      alert('Item added to cart!');
+    } catch(err) {
+      alert('Failed to add to cart');
+    }
+  };
 
   return (
     <DashboardShell title="Digital Menu" subtitle="Browse our finest selections before your reservation." navItems={navItems}>
@@ -116,12 +130,17 @@ function CustomerMenuPage() {
                     ${item.price.toFixed(2)}
                   </p>
                   
-                  {/* Decorative button/icon indicating interactivity */}
-                  <div className="h-10 w-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ backgroundColor: 'var(--accent)', color: 'white' }}>
+                  {/* Add to cart button */}
+                  <button 
+                    onClick={(e) => handleAddToCart(e, item.id)}
+                    disabled={isCartLoading}
+                    className="h-10 w-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 disabled:opacity-50 hover:scale-110" 
+                    style={{ backgroundColor: 'var(--accent)', color: 'white' }}
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
                     </svg>
-                  </div>
+                  </button>
                 </div>
               </div>
             </article>

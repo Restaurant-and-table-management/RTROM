@@ -9,6 +9,8 @@ import useReservationStore from '../../store/reservationStore';
 const navItems = [
   { to: '/customer', label: 'Reserve', end: true },
   { to: '/customer/menu', label: 'Menu' },
+  { to: '/customer/cart', label: 'My Cart' },
+  { to: '/customer/orders', label: 'My Orders' },
   { to: '/customer/reservations', label: 'My Reservations' },
 ];
 
