@@ -5,10 +5,10 @@ spring:
   application:
     name: rtrom-backend
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/rtrom_db}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:}
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:rtrom;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 5
@@ -16,7 +16,8 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: ${JPA_SHOW_SQL:true}
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
         format_sql: true
