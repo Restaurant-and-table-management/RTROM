@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .accessDeniedHandler(customAccessDeniedHandler)
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/actuator/health", "/error").permitAll()
+                .requestMatchers("/api/auth/**", "/actuator/health", "/error", "/ws/**").permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

@@ -36,6 +36,10 @@ public class MenuItem {
     @Column(name = "is_archived", nullable = false)
     private boolean isArchived = false;
 
+    @Column(name = "is_vegetarian")
+    private Boolean isVegetarian = false;
+
+
     // Constructors
     public MenuItem() {}
 
@@ -120,5 +124,13 @@ public class MenuItem {
 
     public void setArchived(boolean archived) {
         isArchived = archived;
+    }
+
+    public Boolean getIsVegetarian() {
+        return isVegetarian;
+    }
+
+    public void setIsVegetarian(Boolean isVegetarian) {
+        this.isVegetarian = isVegetarian;
     }
 }
