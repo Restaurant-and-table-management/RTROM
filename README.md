@@ -26,6 +26,11 @@ npm run dev
 
 Frontend runs on: `http://localhost:5173`
 
+### 3) Default Admin
+Email:- admin@rtrom.com
+Password:- admin123
+
+
 ## Frontend Dependencies Installed via package.json
 - react-router-dom
 - axios
