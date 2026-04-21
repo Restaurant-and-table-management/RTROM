@@ -35,11 +35,17 @@ public class KitchenOrderTicket {
 
     private String notes;
 
+    @Column(length = 500)
+    private String specialInstructions;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     void onCreate() {
         createdAt = LocalDateTime.now();
+        if (kitchenStatus == null) {
+            kitchenStatus = KitchenTicketStatus.RECEIVED;
+        }
     }
 }

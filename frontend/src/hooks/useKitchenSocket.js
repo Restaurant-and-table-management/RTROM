@@ -3,53 +3,70 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
 /**
- * Custom hook for connecting to the RTROM Kitchen WebSocket.
+ * STOMP-over-SockJS WebSocket hook for Kitchen Display.
  *
- * @param {Function} onTicketUpdate - Callback invoked when a kitchen ticket update arrives on /topic/kitchen/tickets
- * @param {boolean} enabled - Set to false to skip connection (e.g., when not on kitchen page)
- *
- * Usage:
- *   useKitchenSocket((ticket) => { console.log('Updated:', ticket); }, true);
+ * NOTE: Backend WebSocket config registers endpoint `/ws` on port 8081.
+ *       If the connection fails (wrong port/path), the store's mock data
+ *       remains visible and functional.
  */
-const useKitchenSocket = (onTicketUpdate, enabled = true) => {
-  const clientRef = useRef(null);
+const useKitchenSocket = (onTicketUpdate, enabled = true, onReconnect) => {
+  const clientRef        = useRef(null);
+  const onTicketUpdateRef = useRef(onTicketUpdate);
+  const onReconnectRef   = useRef(onReconnect);
+
+  useEffect(() => { onTicketUpdateRef.current = onTicketUpdate; }, [onTicketUpdate]);
+  useEffect(() => { onReconnectRef.current   = onReconnect;     }, [onReconnect]);
 
   const connect = useCallback(() => {
-    const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8081/ws'),
-      reconnectDelay: 5000,
-      onConnect: () => {
-        console.log('[RTROM Kitchen WS] Connected');
+    // Try the backend WebSocket endpoint. Falls back gracefully if unavailable.
+    const WS_URL = 'http://localhost:8081/ws';
+    console.log('[WS-RTROM] Connecting to', WS_URL);
 
-        client.subscribe('/topic/kitchen/tickets', (message) => {
+    const client = new Client({
+      webSocketFactory: () => new SockJS(WS_URL),
+      reconnectDelay: 5000,
+
+      onConnect: () => {
+        console.log('[WS-RTROM] ✅ Connected');
+
+        const handle = (topic, msg) => {
           try {
-            const ticket = JSON.parse(message.body);
-            if (onTicketUpdate) onTicketUpdate(ticket);
-          } catch (err) {
-            console.error('[RTROM Kitchen WS] Failed to parse message:', err);
+            const ticket = JSON.parse(msg.body);
+            console.log('[WS-RTROM] Message on', topic, ticket);
+            onTicketUpdateRef.current?.(ticket);
+          } catch (e) {
+            console.error('[WS-RTROM] Parse error on', topic, e);
           }
+        };
+
+        // Subscribe to all kitchen-related topics
+        ['/topic/kitchen', '/topic/orders', '/topic/kitchen/tickets'].forEach((topic) => {
+          client.subscribe(topic, (msg) => handle(topic, msg));
+          console.log('[WS-RTROM] Subscribed to', topic);
         });
+
+        // Refetch on every connect to sync any missed events
+        if (onReconnectRef.current) {
+          console.log('[WS-RTROM] Triggering reconnect refetch');
+          onReconnectRef.current();
+        }
       },
-      onDisconnect: () => {
-        console.log('[RTROM Kitchen WS] Disconnected');
-      },
-      onStompError: (frame) => {
-        console.error('[RTROM Kitchen WS] STOMP error:', frame);
-      },
+
+      onDisconnect: () => console.log('[WS-RTROM] Disconnected — retrying in 5s…'),
+      onStompError: (frame) => console.error('[WS-RTROM] STOMP error', frame),
     });
 
     client.activate();
     clientRef.current = client;
-  }, [onTicketUpdate]);
+  }, []);
 
   useEffect(() => {
     if (!enabled) return;
     connect();
     return () => {
-      if (clientRef.current) {
-        clientRef.current.deactivate();
-        clientRef.current = null;
-      }
+      clientRef.current?.deactivate();
+      clientRef.current = null;
+      console.log('[WS-RTROM] Deactivated');
     };
   }, [connect, enabled]);
 };

@@ -205,10 +205,6 @@ public class KitchenService {
                         .build())
                 .collect(Collectors.toList());
 
-        // Assuming SpecialInstructions are not explicitly on order but handled via item notes, 
-        // I will just set it to null or get a general note if it exists on Order. 
-        // We'll leave it empty for now as order.getSpecialInstructions() doesn't exist on Order.java we saw earlier.
-
         return KitchenTicketResponse.builder()
                 .ticketId(ticket.getId())
                 .orderId(order.getId())
@@ -220,9 +216,9 @@ public class KitchenService {
                 .completedAt(ticket.getCompletedAt())
                 .estimatedMinutes(ticket.getEstimatedMinutes())
                 .notes(ticket.getNotes())
+                .specialInstructions(ticket.getSpecialInstructions())
                 .createdAt(ticket.getCreatedAt())
                 .items(itemDetails)
-                .specialInstructions(null)
                 .totalAmount(order.getTotalAmount())
                 .build();
     }
