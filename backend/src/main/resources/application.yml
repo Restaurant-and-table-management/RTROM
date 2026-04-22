@@ -30,3 +30,7 @@ app:
     secret: ${JWT_SECRET:change-me-to-a-strong-random-secret}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
     issuer: ${JWT_ISSUER:rtrom-backend}
+
+  websocket:
+    allowed-origins: "http://localhost:5173"
+

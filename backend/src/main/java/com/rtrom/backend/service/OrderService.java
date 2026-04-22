@@ -7,6 +7,7 @@ import com.rtrom.backend.exception.ResourceNotFoundException;
 import com.rtrom.backend.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 
@@ -19,19 +20,22 @@ public class OrderService {
     private final MenuItemRepository menuItemRepository;
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
+    private final KitchenService kitchenService;
 
     public OrderService(
             OrderRepository orderRepository,
             RestaurantTableRepository tableRepository,
             MenuItemRepository menuItemRepository,
             UserRepository userRepository,
-            ReservationRepository reservationRepository
+            ReservationRepository reservationRepository,
+            @Lazy KitchenService kitchenService
     ) {
         this.orderRepository = orderRepository;
         this.tableRepository = tableRepository;
         this.menuItemRepository = menuItemRepository;
         this.userRepository = userRepository;
         this.reservationRepository = reservationRepository;
+        this.kitchenService = kitchenService;
     }
 
     public Order createOrder(CreateOrderRequest request, String userEmail) {
@@ -80,7 +84,9 @@ public class OrderService {
             order.addItem(orderItem);
         }
 
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        kitchenService.createTicketForOrder(savedOrder);
+        return savedOrder;
     }
 
     @Transactional(readOnly = true)
