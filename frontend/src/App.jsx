@@ -19,6 +19,9 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import WaiterPage from './pages/waiter/WaiterPage';
 import { ROLES } from './utils/roleRoutes';
+import CheckoutPage from './pages/customer/CheckoutPage';
+import PaymentPage from './pages/customer/PaymentPage';
+import AdminBillingPage from './pages/admin/AdminBillingPage';
 
 function App() {
   return (
@@ -41,6 +44,7 @@ function App() {
           <Route path="/admin/menu" element={<MenuManagementPage />} />
           <Route path="/admin/users" element={<UserManagementPage />} />
           <Route path="/admin/analytics" element={<AnalyticsPage />} />
+          <Route path="/admin/billing" element={<AdminBillingPage />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={[ROLES.CUSTOMER]} />}>
@@ -48,6 +52,8 @@ function App() {
           <Route path="/customer/menu" element={<CustomerMenuPage />} />
           <Route path="/customer/reservations" element={<MyReservations />} />
           <Route path="/customer/profile" element={<CustomerProfilePage />} />
+          <Route path="/customer/checkout/:orderId" element={<CheckoutPage />} />
+          <Route path="/customer/payment/:billId" element={<PaymentPage />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={[ROLES.KITCHEN_STAFF, ROLES.ADMIN]} />}>

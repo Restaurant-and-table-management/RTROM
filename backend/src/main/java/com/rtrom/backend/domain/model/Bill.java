@@ -21,12 +21,24 @@ public class Bill {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String billNumber;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     @Column(nullable = false)
-    private BigDecimal totalAmount;
+    private BigDecimal subtotal;
+
+    @Column(nullable = false)
+    private BigDecimal tax;
+
+    @Column(nullable = false)
+    private BigDecimal discount;
+
+    @Column(nullable = false)
+    private BigDecimal grandTotal;
 
     @Column(nullable = false)
     private String status;
