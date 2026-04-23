@@ -6,6 +6,7 @@ import { getTables } from '../../api/tableApi';
 import { createWalkIn } from '../../api/reservationApi';
 import { menuApi } from '../../api/menuApi';
 import { createOrder, getOrders } from '../../api/orderApi';
+import { billService } from '../../api/billService';
 
 function WaiterPage() {
   const logout = useAuthStore((state) => state.logout);
@@ -90,6 +91,16 @@ function WaiterPage() {
     }
   };
 
+  const handleCheckoutTable = async (tableId) => {
+    try {
+      await billService.checkout(tableId);
+      setToast({ type: 'success', message: 'Table checkout triggered successfully.' });
+      await loadData();
+    } catch (error) {
+      setToast({ type: 'error', message: error.response?.data?.error || error.response?.data?.message || 'Checkout failed.' });
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[color:var(--surface-alt)] p-4 md:p-8">
       <div className="mx-auto max-w-7xl">
@@ -139,12 +150,20 @@ function WaiterPage() {
                       </button>
                     )}
                     {item.status === 'OCCUPIED' && (
-                      <button 
-                        onClick={() => { setOrderTable(item); setCurrentOrder([]); }}
-                        className="btn-outline px-3 py-1 text-xs"
-                      >
-                        Place Order
-                      </button>
+                      <div className="flex flex-col gap-2">
+                        <button 
+                          onClick={() => { setOrderTable(item); setCurrentOrder([]); }}
+                          className="btn-outline px-3 py-1 text-xs"
+                        >
+                          Place Order
+                        </button>
+                        <button 
+                          onClick={() => handleCheckoutTable(item.id)}
+                          className="btn-accent bg-emerald-600 hover:bg-emerald-700 px-3 py-1 text-xs"
+                        >
+                          Checkout
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -167,7 +186,7 @@ function WaiterPage() {
                   <div>
                     <p className="font-semibold text-[color:var(--text-primary)]">{item.table.tableNumber}</p>
                     <p className="text-xs text-[color:var(--text-secondary)]">
-                      {item.items.length} items • ${item.totalAmount}
+                      {item.items.length} items • Rs {item.totalAmount}
                     </p>
                   </div>
                   <StatusBadge status={item.status} />
@@ -228,7 +247,7 @@ function WaiterPage() {
                     >
                       <div className="text-left">
                         <p className="font-medium">{item.name}</p>
-                        <p className="text-xs text-[color:var(--text-secondary)]">${item.price}</p>
+                        <p className="text-xs text-[color:var(--text-secondary)]">Rs {item.price}</p>
                       </div>
                       <span className="text-xl text-[color:var(--primary)]">+</span>
                     </button>

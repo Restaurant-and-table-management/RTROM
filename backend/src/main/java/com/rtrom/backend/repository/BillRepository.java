@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface BillRepository extends JpaRepository<Bill, Long> {
-    Optional<Bill> findByOrderId(Long orderId);
+    java.util.Optional<Bill> findByTableIdAndStatus(Long tableId, String status);
 }

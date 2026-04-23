@@ -52,7 +52,7 @@ function App() {
           <Route path="/customer/menu" element={<CustomerMenuPage />} />
           <Route path="/customer/reservations" element={<MyReservations />} />
           <Route path="/customer/profile" element={<CustomerProfilePage />} />
-          <Route path="/customer/checkout/:orderId" element={<CheckoutPage />} />
+          <Route path="/customer/checkout/:billId" element={<CheckoutPage />} />
           <Route path="/customer/payment/:billId" element={<PaymentPage />} />
         </Route>
 

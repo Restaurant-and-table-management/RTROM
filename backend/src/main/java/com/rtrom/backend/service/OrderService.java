@@ -60,6 +60,11 @@ public class OrderService {
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("No active confirmed reservation found for Table " + table.getTableNumber() + " associated with you today."));
 
+        // A confirmed reservation becomes actively occupied once ordering starts.
+        if (table.getStatus() != TableStatus.OCCUPIED) {
+            table.setStatus(TableStatus.OCCUPIED);
+        }
+
         User user = reservation.getUser();
         if (currentUser.getRole() != com.rtrom.backend.domain.model.Role.CUSTOMER) {
             // If admin/waiter is placing order, use the customer's account for billing
