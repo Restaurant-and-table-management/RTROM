@@ -23,6 +23,8 @@ function AdminOrdersPage() {
   const [toast, setToast] = useState({ type: 'error', message: '' });
   const [deleting, setDeleting] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
 
 
   useEffect(() => {
@@ -61,7 +63,7 @@ function AdminOrdersPage() {
 
   const confirmDelete = async () => {
     if (!orderToDelete) return;
-    
+
     try {
       setDeleting(true);
       await deleteOrder(orderToDelete.id);
@@ -76,6 +78,11 @@ function AdminOrdersPage() {
   };
 
 
+  const filteredOrders = orders.filter(o => {
+    const matchStatus = statusFilter === 'ALL' || o.status === statusFilter;
+    const matchSearch = searchQuery === '' || String(o.id).includes(searchQuery);
+    return matchStatus && matchSearch;
+  });
 
   return (
     <DashboardShell
@@ -86,10 +93,33 @@ function AdminOrdersPage() {
       <ToastMessage type={toast.type} message={toast.message} onClose={() => setToast({ type: 'error', message: '' })} />
 
       <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="rounded-xl border border-[color:var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)] shadow-sm transition"
+          >
+            <option value="ALL">All Statuses</option>
+            {ORDER_STATUSES.map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+
+          <div className="relative group">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[color:var(--text-muted)] group-focus-within:text-[color:var(--accent)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <input
+              type="text"
+              placeholder="Search Order ID..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2 rounded-xl border border-[color:var(--border)] bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)] shadow-sm transition w-48"
+            />
+          </div>
         </div>
-        <div className="text-xs text-slate-500 font-medium bg-slate-100 px-3 py-1.5 rounded-full">
-          {orders.length} Total Orders
+        <div className="flex items-center gap-3">
+          <div className="text-xs text-slate-500 font-medium bg-slate-100 px-3 py-1.5 rounded-full">
+            {(statusFilter !== 'ALL' || searchQuery !== '') ? `${filteredOrders.length} Filtered` : `${orders.length} Total`} Orders
+          </div>
         </div>
       </div>
 
@@ -116,13 +146,15 @@ function AdminOrdersPage() {
                   </td>
                 </tr>
               )}
-              {Array.isArray(orders) && orders.map((order) => (
+              {Array.isArray(filteredOrders) && filteredOrders.map((order) => (
                 <tr key={order?.id} className="hover:bg-gray-50 transition-colors">
 
                   <td className="px-6 py-4 font-medium text-[color:var(--primary)]">#{order?.id}</td>
                   <td className="px-6 py-4">{order?.table?.tableNumber || 'N/A'}</td>
                   <td className="px-6 py-4">
-                    <div className="font-medium text-slate-900">{order?.user?.firstName || 'Unknown'} {order?.user?.lastName || 'User'}</div>
+                    <div className="font-medium text-slate-900">
+                      {order?.customerName || `${order?.user?.firstName || 'Unknown'} ${order?.user?.lastName || 'User'}`}
+                    </div>
                     <div className="text-[10px] text-[color:var(--text-secondary)]">{order?.user?.email || 'No Email'}</div>
                   </td>
                   <td className="px-6 py-4">
@@ -142,8 +174,8 @@ function AdminOrdersPage() {
                   </td>
                   <td className="px-6 py-4 flex flex-col gap-2">
                     <StatusBadge status={order?.status || 'PENDING'} />
-                    <select 
-                      value={order?.status || 'PENDING'} 
+                    <select
+                      value={order?.status || 'PENDING'}
                       onChange={(e) => handleStatusChange(order?.id, e.target.value)}
                       className="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-alt)] px-2 py-1.5 text-[10px] font-semibold text-[color:var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]"
                     >
@@ -155,7 +187,7 @@ function AdminOrdersPage() {
 
                 </tr>
               ))}
-              {orders.length === 0 && !loading && (
+              {filteredOrders.length === 0 && !loading && (
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center text-[color:var(--text-secondary)] italic">
                     No orders found.
@@ -184,14 +216,14 @@ function AdminOrdersPage() {
               {' '}This action cannot be undone and will permanently remove these records.
             </p>
             <div className="flex gap-3">
-              <button 
+              <button
                 onClick={() => setOrderToDelete(null)}
                 disabled={deleting}
                 className="flex-1 rounded-xl border border-slate-200 py-3 font-semibold text-slate-700 hover:bg-slate-50 transition"
               >
                 Cancel
               </button>
-              <button 
+              <button
                 onClick={confirmDelete}
                 disabled={deleting}
                 className="flex-1 rounded-xl bg-red-600 py-3 font-semibold text-white hover:bg-red-700 shadow-lg shadow-red-200 transition disabled:opacity-50"

@@ -39,8 +39,7 @@ public class OrderService {
             KitchenEventPublisher eventPublisher,
             KitchenOrderTicketRepository kitchenOrderTicketRepository,
             BillRepository billRepository,
-            PaymentRepository paymentRepository
-    ) {
+            PaymentRepository paymentRepository) {
         this.orderRepository = orderRepository;
         this.tableRepository = tableRepository;
         this.menuItemRepository = menuItemRepository;
@@ -60,10 +59,12 @@ public class OrderService {
         User currentUser = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
 
-        logger.info("Creating order for table {} by user {}. Table status: {}", table.getTableNumber(), userEmail, table.getStatus());
+        logger.info("Creating order for table {} by user {}. Table status: {}", table.getTableNumber(), userEmail,
+                table.getStatus());
 
         // Find the reservation for this table today.
-        Reservation reservation = reservationRepository.findByTableIdAndStatus(table.getId(), ReservationStatus.CONFIRMED)
+        Reservation reservation = reservationRepository
+                .findByTableIdAndStatus(table.getId(), ReservationStatus.CONFIRMED)
                 .stream()
                 .filter(r -> r.getReservationDate().equals(java.time.LocalDate.now()))
                 .filter(r -> {
@@ -78,9 +79,12 @@ public class OrderService {
         User user;
         if (reservation != null) {
             user = reservation.getUser();
-            logger.info("Found reservation id={} for table {}. Associate user: {}", reservation.getId(), table.getTableNumber(), user.getEmail());
-        } else if (currentUser.getRole() != com.rtrom.backend.domain.model.Role.CUSTOMER && table.getStatus() == TableStatus.OCCUPIED) {
-            logger.info("No explicit reservation found for occupied table {}, using default walk-in user.", table.getTableNumber());
+            logger.info("Found reservation id={} for table {}. Associate user: {}", reservation.getId(),
+                    table.getTableNumber(), user.getEmail());
+        } else if (currentUser.getRole() != com.rtrom.backend.domain.model.Role.CUSTOMER
+                && table.getStatus() == TableStatus.OCCUPIED) {
+            logger.info("No explicit reservation found for occupied table {}, using default walk-in user.",
+                    table.getTableNumber());
             user = userRepository.findByEmail("walkin@rtrom.com").orElseGet(() -> {
                 logger.info("Creating default walk-in user.");
                 User newUser = new User();
@@ -92,14 +96,26 @@ public class OrderService {
                 return userRepository.save(newUser);
             });
         } else {
-            logger.error("Order placement failed: No active confirmed reservation found for Table {} and user role is {}", table.getTableNumber(), currentUser.getRole());
-            throw new ResourceNotFoundException("No active confirmed reservation found for Table " + table.getTableNumber() + " associated with you today.");
+            logger.error(
+                    "Order placement failed: No active confirmed reservation found for Table {} and user role is {}",
+                    table.getTableNumber(), currentUser.getRole());
+            throw new ResourceNotFoundException("No active confirmed reservation found for Table "
+                    + table.getTableNumber() + " associated with you today.");
         }
 
         Order order = new Order();
         order.setTable(table);
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
+
+        // Capture walk-in customer name if present in reservation special requests
+        if (reservation != null && reservation.getSpecialRequests() != null
+                && reservation.getSpecialRequests().startsWith("Walk-in: ")) {
+            String walkInName = reservation.getSpecialRequests().substring(9);
+            if (!"Anonymous".equals(walkInName)) {
+                order.setCustomerName(walkInName);
+            }
+        }
 
         logger.info("Adding {} items to order.", request.items().size());
 
@@ -112,7 +128,7 @@ public class OrderService {
             orderItem.setQuantity(itemReq.quantity());
             orderItem.setUnitPrice(menuItem.getPrice());
             orderItem.setNotes(itemReq.notes());
-            
+
             order.addItem(orderItem);
         }
 
@@ -131,54 +147,65 @@ public class OrderService {
     public Order updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        
+
         order.setStatus(status);
-        
+
         if (status == OrderStatus.PAID || status == OrderStatus.CANCELLED) {
             if (status == OrderStatus.PAID) {
                 RestaurantTable table = order.getTable();
                 table.setStatus(TableStatus.AVAILABLE);
-                
-                // Also mark any today's confirmed reservation for this table and user as COMPLETED
+
+                // Also mark any today's confirmed reservation for this table and user as
+                // COMPLETED
                 reservationRepository.findByTableIdAndStatus(table.getId(), ReservationStatus.CONFIRMED)
-                    .stream()
-                    .filter(r -> r.getReservationDate().equals(java.time.LocalDate.now()))
-                    .filter(r -> r.getUser().getId().equals(order.getUser().getId()))
-                    .forEach(r -> r.setStatus(ReservationStatus.COMPLETED));
-                    
+                        .stream()
+                        .filter(r -> r.getReservationDate().equals(java.time.LocalDate.now()))
+                        .filter(r -> r.getUser().getId().equals(order.getUser().getId()))
+                        .forEach(r -> r.setStatus(ReservationStatus.COMPLETED));
+
                 logger.info("Order {} paid. Table {} is now AVAILABLE.", orderId, table.getTableNumber());
             }
 
             // Remove kitchen ticket if paid or cancelled to clean up the kitchen dashboard
             kitchenOrderTicketRepository.findByOrderId(orderId)
-                .ifPresent(ticket -> {
-                    kitchenOrderTicketRepository.delete(ticket);
-                    logger.info("Order {} is {}, kitchen ticket {} deleted.", orderId, status, ticket.getId());
-                });
-                
+                    .ifPresent(ticket -> {
+                        kitchenOrderTicketRepository.delete(ticket);
+                        logger.info("Order {} is {}, kitchen ticket {} deleted.", orderId, status, ticket.getId());
+                    });
+
         } else {
             // Sync status with Kitchen
             kitchenOrderTicketRepository.findByOrderId(orderId)
-                .ifPresent(ticket -> {
-                    com.rtrom.backend.domain.enums.KitchenTicketStatus newKitchenStatus = null;
-                    switch (status) {
-                        case PENDING: newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.RECEIVED; break;
-                        case PREPARING: newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.IN_PROGRESS; break;
-                        case READY: newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.READY; break;
-                        case SERVED: newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.SERVED; break;
-                    }
-                    
-                    if (newKitchenStatus != null && ticket.getKitchenStatus() != newKitchenStatus) {
-                        ticket.setKitchenStatus(newKitchenStatus);
-                        kitchenOrderTicketRepository.save(ticket);
-                        
-                        com.rtrom.backend.dto.response.KitchenTicketResponse response = kitchenService.mapToResponse(ticket);
-                        eventPublisher.publishTicketUpdate(response);
-                        logger.info("Order {} status synced. Kitchen ticket {} marked as {}.", orderId, ticket.getId(), newKitchenStatus);
-                    }
-                });
+                    .ifPresent(ticket -> {
+                        com.rtrom.backend.domain.enums.KitchenTicketStatus newKitchenStatus = null;
+                        switch (status) {
+                            case PENDING:
+                                newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.RECEIVED;
+                                break;
+                            case PREPARING:
+                                newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.IN_PROGRESS;
+                                break;
+                            case READY:
+                                newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.READY;
+                                break;
+                            case SERVED:
+                                newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.SERVED;
+                                break;
+                        }
+
+                        if (newKitchenStatus != null && ticket.getKitchenStatus() != newKitchenStatus) {
+                            ticket.setKitchenStatus(newKitchenStatus);
+                            kitchenOrderTicketRepository.save(ticket);
+
+                            com.rtrom.backend.dto.response.KitchenTicketResponse response = kitchenService
+                                    .mapToResponse(ticket);
+                            eventPublisher.publishTicketUpdate(response);
+                            logger.info("Order {} status synced. Kitchen ticket {} marked as {}.", orderId,
+                                    ticket.getId(), newKitchenStatus);
+                        }
+                    });
         }
-        
+
         Order updatedOrder = orderRepository.save(order);
         eventPublisher.publishGeneralUpdate("ORDER_UPDATED");
         return updatedOrder;
@@ -188,17 +215,18 @@ public class OrderService {
     public void deleteOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        
+
         logger.info("Deleting order {} and its associated data.", orderId);
-        
+
         // 1. Delete associated payments/bills if they exist
         paymentRepository.deleteByOrderUserId(order.getUser().getId()); // This is a bit broad, should be by order
         // Better: add specific delete methods to repositories if needed.
-        // For now, let's at least handle the kitchen ticket which is the most common blocker.
-        
+        // For now, let's at least handle the kitchen ticket which is the most common
+        // blocker.
+
         kitchenOrderTicketRepository.findByOrderId(orderId)
                 .ifPresent(ticket -> kitchenOrderTicketRepository.delete(ticket));
-        
+
         orderRepository.delete(order);
         eventPublisher.publishGeneralUpdate("ORDER_DELETED");
     }
