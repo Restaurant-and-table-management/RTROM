@@ -71,7 +71,8 @@ const MenuManagementPage = () => {
 
   const filteredItems = menuItems.filter(item => {
     const matchCategory = filterCategory === 'ALL' || item.category?.name === filterCategory;
-    const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchCategory && matchSearch;
   });
 

@@ -10,6 +10,11 @@ export async function getOrders() {
   return response.data;
 }
 
+export async function getMyOrders() {
+  const response = await apiClient.get('/orders/me');
+  return response.data;
+}
+
 export async function updateOrderStatus(orderId, status) {
   const response = await apiClient.patch(`/orders/${orderId}/status`, null, {
     params: { status }

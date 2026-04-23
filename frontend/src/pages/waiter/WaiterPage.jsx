@@ -188,6 +188,7 @@ function WaiterPage() {
               </button>
             ))}
           </div>
+        </section>
 
         {/* ── RIGHT SIDE: DYNAMIC PANEL ───────────────────────────────────── */}
         <aside className="bg-white rounded-3xl border border-[color:var(--border)] shadow-[var(--shadow-md)] flex flex-col overflow-hidden">

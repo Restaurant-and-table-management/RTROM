@@ -104,10 +104,10 @@ public class UserService {
             customerProfileRepository.deleteByUserId(userId);
             
             // 2. Payments (depends on Bill -> Order -> User)
-            paymentRepository.deleteByOrderUserId(userId);
+            paymentRepository.deleteBySourceOrderUserId(userId);
             
             // 3. Bills (depends on Order -> User)
-            billRepository.deleteByOrderUserId(userId);
+            billRepository.deleteBySourceOrderUserId(userId);
             
             // 4. Kitchen Tickets (depends on Order -> User)
             kitchenOrderTicketRepository.deleteByOrderUserId(userId);

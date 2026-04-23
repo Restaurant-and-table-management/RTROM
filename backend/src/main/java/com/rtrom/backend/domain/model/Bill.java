@@ -61,8 +61,20 @@ public class Bill {
     public String getBillNumber() { return billNumber; }
     public void setBillNumber(String billNumber) { this.billNumber = billNumber; }
 
-    public Order getOrder() { return order; }
-    public void setOrder(Order order) { this.order = order; }
+    public Order getSourceOrder() { return sourceOrder; }
+    public void setSourceOrder(Order sourceOrder) { this.sourceOrder = sourceOrder; }
+
+    public RestaurantTable getTable() { return table; }
+    public void setTable(RestaurantTable table) { this.table = table; }
+
+    public Reservation getReservation() { return reservation; }
+    public void setReservation(Reservation reservation) { this.reservation = reservation; }
+
+    public java.util.List<Order> getOrders() { return orders; }
+    public void setOrders(java.util.List<Order> orders) { this.orders = orders; }
+
+    public BigDecimal getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
 
     public BigDecimal getSubtotal() { return subtotal; }
     public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
@@ -102,7 +114,10 @@ public class Bill {
 
         public BillBuilder id(Long id) { bill.setId(id); return this; }
         public BillBuilder billNumber(String billNumber) { bill.setBillNumber(billNumber); return this; }
-        public BillBuilder order(Order order) { bill.setOrder(order); return this; }
+        public BillBuilder sourceOrder(Order sourceOrder) { bill.setSourceOrder(sourceOrder); return this; }
+        public BillBuilder table(RestaurantTable table) { bill.setTable(table); return this; }
+        public BillBuilder reservation(Reservation reservation) { bill.setReservation(reservation); return this; }
+        public BillBuilder totalAmount(BigDecimal totalAmount) { bill.setTotalAmount(totalAmount); return this; }
         public BillBuilder subtotal(BigDecimal subtotal) { bill.setSubtotal(subtotal); return this; }
         public BillBuilder tax(BigDecimal tax) { bill.setTax(tax); return this; }
         public BillBuilder discount(BigDecimal discount) { bill.setDiscount(discount); return this; }
