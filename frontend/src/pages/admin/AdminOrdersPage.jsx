@@ -43,7 +43,7 @@ function AdminOrdersPage() {
   const loadOrders = async () => {
     try {
       const data = await getOrders();
-      setOrders(data);
+      setOrders(Array.isArray(data) ? data : []);
     } catch (error) {
       setToast({ type: 'error', message: 'Failed to fetch orders.' });
     } finally {

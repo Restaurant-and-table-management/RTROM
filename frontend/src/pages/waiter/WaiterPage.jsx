@@ -57,10 +57,10 @@ function WaiterPage() {
         menuApi.getAllMenuItems(true),
         categoryApi.getAllCategories()
       ]);
-      setTables(tableData);
-      setOrders(orderData);
-      setMenuItems(menuData.data);
-      setCategories(categoryData.data);
+      setTables(Array.isArray(tableData) ? tableData : []);
+      setOrders(Array.isArray(orderData) ? orderData : []);
+      setMenuItems(menuData?.data && Array.isArray(menuData.data) ? menuData.data : []);
+      setCategories(categoryData?.data && Array.isArray(categoryData.data) ? categoryData.data : []);
       setLastUpdated(new Date());
     } catch (error) {
       setToast({ type: 'error', message: 'Failed to sync data.' });

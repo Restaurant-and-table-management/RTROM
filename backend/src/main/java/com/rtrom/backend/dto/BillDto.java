@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 public class BillDto {
     private Long id;
     private String billNumber;
+    private Long orderId;
     private Long tableId;
     private Long reservationId;
-    private Long orderId;
     private BigDecimal subtotal;
     private BigDecimal tax;
     private BigDecimal discount;
