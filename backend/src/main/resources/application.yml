@@ -30,9 +30,10 @@ app:
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
     issuer: ${JWT_ISSUER:rtrom-backend}
 
-  stripe:
-    secret-key: ${STRIPE_SECRET_KEY}
-
   websocket:
     allowed-origins: ${WEBSOCKET_ALLOWED_ORIGINS:http://localhost:5173}
 
+
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY}
+  publishable-key: ${STRIPE_PUBLISHABLE_KEY}
