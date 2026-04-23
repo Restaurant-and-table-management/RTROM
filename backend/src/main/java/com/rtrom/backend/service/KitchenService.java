@@ -27,8 +27,7 @@ public class KitchenService {
     public KitchenService(
             KitchenOrderTicketRepository kitchenTicketRepository,
             com.rtrom.backend.repository.OrderRepository orderRepository,
-            KitchenEventPublisher kitchenEventPublisher
-    ) {
+            KitchenEventPublisher kitchenEventPublisher) {
         this.kitchenTicketRepository = kitchenTicketRepository;
         this.orderRepository = orderRepository;
         this.kitchenEventPublisher = kitchenEventPublisher;
@@ -104,15 +103,14 @@ public class KitchenService {
 
         if (ticket.getKitchenStatus() != KitchenTicketStatus.RECEIVED) {
             throw new BadRequestException(
-                "Cannot start cooking. Ticket is currently in status: " + ticket.getKitchenStatus()
-            );
+                    "Cannot start cooking. Ticket is currently in status: " + ticket.getKitchenStatus());
         }
 
         ticket.setKitchenStatus(KitchenTicketStatus.IN_PROGRESS);
         ticket.setStartedAt(LocalDateTime.now());
 
         KitchenOrderTicket saved = kitchenTicketRepository.save(ticket);
-        
+
         // Sync Order status
         Order order = saved.getOrder();
         order.setStatus(com.rtrom.backend.domain.model.OrderStatus.PREPARING);
@@ -141,15 +139,14 @@ public class KitchenService {
 
         if (ticket.getKitchenStatus() != KitchenTicketStatus.IN_PROGRESS) {
             throw new BadRequestException(
-                "Cannot mark ready. Ticket is currently in status: " + ticket.getKitchenStatus()
-            );
+                    "Cannot mark ready. Ticket is currently in status: " + ticket.getKitchenStatus());
         }
 
         ticket.setKitchenStatus(KitchenTicketStatus.READY);
         ticket.setCompletedAt(LocalDateTime.now());
 
         KitchenOrderTicket saved = kitchenTicketRepository.save(ticket);
-        
+
         // Sync Order status
         Order order = saved.getOrder();
         order.setStatus(com.rtrom.backend.domain.model.OrderStatus.READY);
@@ -168,7 +165,7 @@ public class KitchenService {
     }
 
     /**
-     * PUT /api/kitchen/tickets/{id}/served  (existing endpoint from base scaffold)
+     * PUT /api/kitchen/tickets/{id}/served (existing endpoint from base scaffold)
      * Transitions ticket from READY → SERVED.
      * Called by WAITER role.
      */
@@ -178,14 +175,13 @@ public class KitchenService {
 
         if (ticket.getKitchenStatus() != KitchenTicketStatus.READY) {
             throw new BadRequestException(
-                "Cannot mark served. Ticket is currently in status: " + ticket.getKitchenStatus()
-            );
+                    "Cannot mark served. Ticket is currently in status: " + ticket.getKitchenStatus());
         }
 
         ticket.setKitchenStatus(KitchenTicketStatus.SERVED);
 
         KitchenOrderTicket saved = kitchenTicketRepository.save(ticket);
-        
+
         // Sync Order status
         Order order = saved.getOrder();
         order.setStatus(com.rtrom.backend.domain.model.OrderStatus.SERVED);
@@ -210,7 +206,7 @@ public class KitchenService {
         KitchenOrderTicket ticket = findTicketById(ticketId);
         ticket.setAssignedTo(assignedTo);
         KitchenOrderTicket saved = kitchenTicketRepository.save(ticket);
-        
+
         // Sync to Order
         Order order = saved.getOrder();
         order.setAssignedTo(saved.getAssignedTo());

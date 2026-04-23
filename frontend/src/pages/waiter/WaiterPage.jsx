@@ -82,10 +82,10 @@ function WaiterPage() {
     setTableDrafts(prev => {
       const currentDraft = prev[tableId] || [];
       const existing = currentDraft.find(i => i.menuItemId === menuItem.id);
-      
+
       let newDraft;
       if (existing) {
-        newDraft = currentDraft.map(i => 
+        newDraft = currentDraft.map(i =>
           i.menuItemId === menuItem.id ? { ...i, quantity: Math.max(0, i.quantity + delta) } : i
         ).filter(i => i.quantity > 0);
       } else if (delta > 0) {
@@ -93,7 +93,7 @@ function WaiterPage() {
       } else {
         newDraft = currentDraft;
       }
-      
+
       return { ...prev, [tableId]: newDraft };
     });
   };
@@ -101,7 +101,7 @@ function WaiterPage() {
   const handlePlaceOrder = async () => {
     const draft = tableDrafts[activeTable.id];
     if (!draft || draft.length === 0) return;
-    
+
     try {
       await createOrder({
         tableId: activeTable.id,
@@ -141,13 +141,13 @@ function WaiterPage() {
       navItems={navItems}
     >
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-8 h-[calc(100vh-14rem)] overflow-hidden">
-        
+
         {/* ── LEFT SIDE: TABLE MAP ────────────────────────────────────────── */}
         <section className="flex flex-col overflow-hidden bg-white rounded-3xl border border-[color:var(--border)] shadow-[var(--shadow-sm)]">
           <div className="p-6 border-b border-[color:var(--border)] bg-[color:var(--surface-alt)] flex items-center justify-between">
             <h3 className="font-heading text-xl text-[color:var(--primary)]">Floor Map</h3>
             <button onClick={loadData} className="btn-ghost p-2 rounded-full">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             </button>
           </div>
 
@@ -156,11 +156,10 @@ function WaiterPage() {
               <button
                 key={table.id}
                 onClick={() => handleTableClick(table)}
-                className={`group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all duration-300 transform active:scale-95 ${
-                  activeTable?.id === table.id 
-                    ? 'border-[color:var(--accent)] bg-[color:var(--surface)] shadow-[var(--shadow-lg)] -translate-y-1' 
+                className={`group relative flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all duration-300 transform active:scale-95 ${activeTable?.id === table.id
+                    ? 'border-[color:var(--accent)] bg-[color:var(--surface)] shadow-[var(--shadow-lg)] -translate-y-1'
                     : 'bg-white border-[color:var(--border)] hover:border-[color:var(--accent)] shadow-[var(--shadow-sm)]'
-                }`}
+                  }`}
               >
                 {tableDrafts[table.id]?.length > 0 && (
                   <div className="absolute -top-2 -right-2 w-6 h-6 bg-[color:var(--accent)] text-white rounded-full flex items-center justify-center text-[10px] font-black shadow-lg ring-2 ring-white">
@@ -173,10 +172,9 @@ function WaiterPage() {
                 <div className="text-[10px] font-bold uppercase tracking-widest text-[color:var(--text-muted)]">
                   {table.status}
                 </div>
-                <div className={`mt-3 w-2 h-2 rounded-full ${
-                  table.status === 'AVAILABLE' ? 'bg-[color:var(--success)]' : 
-                  table.status === 'OCCUPIED' ? 'bg-[color:var(--warning)]' : 'bg-[color:var(--text-muted)]'
-                }`} />
+                <div className={`mt-3 w-2 h-2 rounded-full ${table.status === 'AVAILABLE' ? 'bg-[color:var(--success)]' :
+                    table.status === 'OCCUPIED' ? 'bg-[color:var(--warning)]' : 'bg-[color:var(--text-muted)]'
+                  }`} />
               </button>
             ))}
           </div>
@@ -184,31 +182,28 @@ function WaiterPage() {
 
         {/* ── RIGHT SIDE: DYNAMIC PANEL ───────────────────────────────────── */}
         <aside className="bg-white rounded-3xl border border-[color:var(--border)] shadow-[var(--shadow-md)] flex flex-col overflow-hidden">
-          
+
           {/* Tabs */}
           <div className="p-3 border-b border-[color:var(--border)] bg-[color:var(--surface-alt)] flex gap-1">
-            <button 
+            <button
               onClick={() => setViewMode('ORDERS')}
-              className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition ${
-                viewMode === 'ORDERS' ? 'bg-[color:var(--primary)] text-white' : 'text-[color:var(--text-secondary)] hover:bg-white'
-              }`}
+              className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition ${viewMode === 'ORDERS' ? 'bg-[color:var(--primary)] text-white' : 'text-[color:var(--text-secondary)] hover:bg-white'
+                }`}
             >
               Active
             </button>
-            <button 
+            <button
               onClick={() => setViewMode('PAST_ORDERS')}
-              className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition ${
-                viewMode === 'PAST_ORDERS' ? 'bg-[color:var(--primary)] text-white' : 'text-[color:var(--text-secondary)] hover:bg-white'
-              }`}
+              className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition ${viewMode === 'PAST_ORDERS' ? 'bg-[color:var(--primary)] text-white' : 'text-[color:var(--text-secondary)] hover:bg-white'
+                }`}
             >
               Past
             </button>
-            <button 
+            <button
               onClick={() => setViewMode('MENU')}
               disabled={!activeTable}
-              className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition ${
-                viewMode === 'MENU' ? 'bg-[color:var(--primary)] text-white' : 'text-[color:var(--text-secondary)] hover:bg-white disabled:opacity-30'
-              }`}
+              className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition ${viewMode === 'MENU' ? 'bg-[color:var(--primary)] text-white' : 'text-[color:var(--text-secondary)] hover:bg-white disabled:opacity-30'
+                }`}
             >
               Menu
             </button>
@@ -227,11 +222,11 @@ function WaiterPage() {
                       </div>
                       <StatusBadge status={order.status} />
                     </div>
-                    
+
                     <div className="flex gap-2 mt-3">
                       {order.status === 'READY' && (
-                        <button 
-                          onClick={() => handleUpdateStatus(order.id, 'SERVED')} 
+                        <button
+                          onClick={() => handleUpdateStatus(order.id, 'SERVED')}
                           className="btn-accent w-full justify-center py-2 text-[10px] uppercase tracking-widest"
                         >
                           Ready to Serve
@@ -242,7 +237,7 @@ function WaiterPage() {
                 ))}
                 {orders.filter(o => !['SERVED', 'PAID', 'CANCELLED'].includes(o.status)).length === 0 && (
                   <div className="text-center py-20 opacity-30">
-                    <svg className="w-12 h-12 mx-auto mb-4 text-[color:var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <svg className="w-12 h-12 mx-auto mb-4 text-[color:var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                     <p className="text-xs font-bold uppercase tracking-widest text-[color:var(--text-muted)]">No active orders</p>
                   </div>
                 )}
@@ -265,7 +260,7 @@ function WaiterPage() {
                 ))}
                 {orders.filter(o => ['SERVED', 'PAID', 'CANCELLED'].includes(o.status)).length === 0 && (
                   <div className="text-center py-20 opacity-30">
-                    <svg className="w-12 h-12 mx-auto mb-4 text-[color:var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <svg className="w-12 h-12 mx-auto mb-4 text-[color:var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     <p className="text-xs font-bold uppercase tracking-widest text-[color:var(--text-muted)]">No past orders</p>
                   </div>
                 )}
@@ -277,18 +272,17 @@ function WaiterPage() {
                 <div className="p-4 border-b border-[color:var(--border)] space-y-3">
                   <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                     {['ALL', ...categories.map(c => c.name)].map(cat => (
-                      <button 
+                      <button
                         key={cat}
                         onClick={() => setFilterCategory(cat)}
-                        className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-tighter transition whitespace-nowrap ${
-                          filterCategory === cat ? 'bg-[color:var(--accent)] text-white' : 'bg-[color:var(--surface-alt)] text-[color:var(--text-secondary)] hover:bg-[color:var(--border)]'
-                        }`}
+                        className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-tighter transition whitespace-nowrap ${filterCategory === cat ? 'bg-[color:var(--accent)] text-white' : 'bg-[color:var(--surface-alt)] text-[color:var(--text-secondary)] hover:bg-[color:var(--border)]'
+                          }`}
                       >
                         {cat}
                       </button>
                     ))}
                   </div>
-                  <input 
+                  <input
                     type="text" placeholder="Search items..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                     className="input py-2"
                   />
@@ -315,11 +309,11 @@ function WaiterPage() {
                               <button onClick={() => updateDraft(activeTable.id, item, 1)} className="w-6 h-6 flex items-center justify-center font-bold">+</button>
                             </div>
                           ) : (
-                            <button 
+                            <button
                               onClick={() => updateDraft(activeTable.id, item, 1)}
                               className="w-9 h-9 rounded-lg bg-[color:var(--surface-alt)] flex items-center justify-center text-[color:var(--text-muted)] hover:bg-[color:var(--primary)] hover:text-white transition shadow-sm"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                             </button>
                           )}
                         </div>
@@ -339,7 +333,7 @@ function WaiterPage() {
                       <div className="text-lg font-heading text-[color:var(--primary)]">{activeTable.tableNumber}</div>
                     </div>
                   </div>
-                  <button 
+                  <button
                     disabled={currentDraft.length === 0}
                     onClick={handlePlaceOrder}
                     className="btn-accent w-full justify-center py-3.5 text-xs uppercase tracking-widest disabled:opacity-30 shadow-lg shadow-[color:var(--accent)]/20"
@@ -359,7 +353,7 @@ function WaiterPage() {
           <div className="w-full max-w-sm rounded-3xl bg-white p-8 shadow-[var(--shadow-lg)] border border-[color:var(--border)]">
             <h3 className="text-3xl font-heading text-[color:var(--primary)] mb-1">Table {walkInTable.tableNumber}</h3>
             <p className="text-xs font-bold text-[color:var(--text-muted)] uppercase tracking-widest mb-6">Initialize Service</p>
-            
+
             <form onSubmit={async (e) => {
               e.preventDefault();
               try {
@@ -377,14 +371,14 @@ function WaiterPage() {
             }} className="space-y-5">
               <div>
                 <label className="label">Guest Count</label>
-                <input 
-                  type="number" min="1" max={walkInTable.capacity} className="input text-lg font-bold" 
+                <input
+                  type="number" min="1" max={walkInTable.capacity} className="input text-lg font-bold"
                   value={walkInForm.guestCount} onChange={(e) => setWalkInForm({ ...walkInForm, guestCount: e.target.value })}
                 />
               </div>
               <div>
                 <label className="label">Customer Name (Optional)</label>
-                <input 
+                <input
                   type="text" className="input" placeholder="e.g. John Doe"
                   value={walkInForm.customerName} onChange={(e) => setWalkInForm({ ...walkInForm, customerName: e.target.value })}
                 />

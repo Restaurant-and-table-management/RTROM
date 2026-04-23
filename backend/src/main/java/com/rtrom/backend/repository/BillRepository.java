@@ -7,8 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface BillRepository extends JpaRepository<Bill, Long> {
+    Optional<Bill> findByOrderId(Long orderId);
+
     @Modifying
     @Query("DELETE FROM Bill b WHERE b.order.user.id = :userId")
     void deleteByOrderUserId(@Param("userId") Long userId);

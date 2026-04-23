@@ -17,10 +17,10 @@ function KitchenTicketCard({ ticket, onStart, onReady, onServed }) {
 
   // ── Border colors per status
   const accentMap = {
-    RECEIVED:    'var(--primary)',
+    RECEIVED: 'var(--primary)',
     IN_PROGRESS: 'var(--warning)',
-    READY:       'var(--success)',
-    SERVED:      'var(--text-muted)',
+    READY: 'var(--success)',
+    SERVED: 'var(--text-muted)',
   };
   const accentColor = accentMap[kitchenStatus] ?? accentMap.RECEIVED;
 
@@ -54,7 +54,7 @@ function KitchenTicketCard({ ticket, onStart, onReady, onServed }) {
       {/* ── Urgency Banner ──────────────────────────────────── */}
       {kitchenStatus !== 'SERVED' && (new Date() - new Date(createdAt)) > 15 * 60 * 1000 && (
         <div className="mb-3 animate-pulse bg-red-50 border border-red-100 rounded-lg p-2 flex items-center gap-2">
-          <svg viewBox="0 0 24 24" className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <svg viewBox="0 0 24 24" className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
           <span className="text-[10px] font-bold text-red-600 uppercase tracking-tight">CRITICAL DELAY</span>
         </div>
       )}
@@ -103,7 +103,7 @@ function KitchenTicketCard({ ticket, onStart, onReady, onServed }) {
             onClick={() => onStart(ticketId)}
             className="w-full btn-accent justify-center py-2 text-xs"
           >
-            <svg viewBox="0 0 24 24" className="w-3 h-3" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+            <svg viewBox="0 0 24 24" className="w-3 h-3" fill="currentColor"><polygon points="5,3 19,12 5,21" /></svg>
             Start Preparing
           </button>
         )}
@@ -114,7 +114,7 @@ function KitchenTicketCard({ ticket, onStart, onReady, onServed }) {
             onClick={() => onReady(ticketId)}
             className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[color:var(--warning)] px-5 py-2 text-xs font-bold text-white transition hover:opacity-90"
           >
-            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
             Mark as Ready
           </button>
         )}
@@ -128,7 +128,7 @@ function KitchenTicketCard({ ticket, onStart, onReady, onServed }) {
         {kitchenStatus === 'SERVED' && servedTime && (
           <div className="flex items-center justify-center gap-2 rounded-lg bg-[color:var(--surface-alt)] py-2">
             <span className="text-[color:var(--success)] text-[11px] font-bold uppercase tracking-wider">Served at {servedTime}</span>
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-[color:var(--success)]" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-[color:var(--success)]" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
           </div>
         )}
       </div>

@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -175,35 +176,43 @@ public class OrderService {
 
         } else {
             // Sync status with Kitchen
-            kitchenOrderTicketRepository.findByOrderId(orderId)
-                    .ifPresent(ticket -> {
-                        com.rtrom.backend.domain.enums.KitchenTicketStatus newKitchenStatus = null;
-                        switch (status) {
-                            case PENDING:
-                                newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.RECEIVED;
-                                break;
-                            case PREPARING:
-                                newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.IN_PROGRESS;
-                                break;
-                            case READY:
-                                newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.READY;
-                                break;
-                            case SERVED:
-                                newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.SERVED;
-                                break;
-                        }
+            Optional<KitchenOrderTicket> ticketOpt = kitchenOrderTicketRepository.findByOrderId(orderId);
 
-                        if (newKitchenStatus != null && ticket.getKitchenStatus() != newKitchenStatus) {
-                            ticket.setKitchenStatus(newKitchenStatus);
-                            kitchenOrderTicketRepository.save(ticket);
+            com.rtrom.backend.domain.enums.KitchenTicketStatus newKitchenStatus = null;
+            switch (status) {
+                case PENDING:
+                    newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.RECEIVED;
+                    break;
+                case PREPARING:
+                    newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.IN_PROGRESS;
+                    break;
+                case READY:
+                    newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.READY;
+                    break;
+                case SERVED:
+                    newKitchenStatus = com.rtrom.backend.domain.enums.KitchenTicketStatus.SERVED;
+                    break;
+            }
 
-                            com.rtrom.backend.dto.response.KitchenTicketResponse response = kitchenService
-                                    .mapToResponse(ticket);
-                            eventPublisher.publishTicketUpdate(response);
-                            logger.info("Order {} status synced. Kitchen ticket {} marked as {}.", orderId,
-                                    ticket.getId(), newKitchenStatus);
-                        }
-                    });
+            if (newKitchenStatus != null) {
+                if (ticketOpt.isPresent()) {
+                    KitchenOrderTicket ticket = ticketOpt.get();
+                    if (ticket.getKitchenStatus() != newKitchenStatus) {
+                        ticket.setKitchenStatus(newKitchenStatus);
+                        kitchenOrderTicketRepository.save(ticket);
+
+                        com.rtrom.backend.dto.response.KitchenTicketResponse response = kitchenService
+                                .mapToResponse(ticket);
+                        eventPublisher.publishTicketUpdate(response);
+                        logger.info("Order {} status synced. Kitchen ticket {} marked as {}.", orderId,
+                                ticket.getId(), newKitchenStatus);
+                    }
+                } else if (status != OrderStatus.SERVED) {
+                    // Re-create kitchen ticket if it was deleted (e.g. order moved from PAID back to PENDING)
+                    kitchenService.createTicketForOrder(order);
+                    logger.info("Order {} moved back to {}. Kitchen ticket re-created.", orderId, status);
+                }
+            }
         }
 
         Order updatedOrder = orderRepository.save(order);
