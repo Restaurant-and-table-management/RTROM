@@ -6,7 +6,8 @@ import { cancelReservation, getMyReservations } from '../../api/reservationApi';
 import useReservationStore from '../../store/reservationStore';
 
 const navItems = [
-  { to: '/customer', label: 'Reserve', end: true },
+  { to: '/customer', label: 'Dashboard', end: true },
+  { to: '/customer/reserve', label: 'Reserve' },
   { to: '/customer/menu', label: 'Menu' },
   { to: '/customer/reservations', label: 'My Reservations' },
   { to: '/customer/profile', label: 'Profile' },

@@ -7,7 +7,8 @@ import { getAvailableTables } from '../../api/tableApi';
 import useReservationStore from '../../store/reservationStore';
 
 const navItems = [
-  { to: '/customer', label: 'Reserve', end: true },
+  { to: '/customer', label: 'Dashboard', end: true },
+  { to: '/customer/reserve', label: 'Reserve' },
   { to: '/customer/menu', label: 'Menu' },
   { to: '/customer/reservations', label: 'My Reservations' },
   { to: '/customer/profile', label: 'Profile' },
@@ -55,19 +56,6 @@ function ReservePage() {
     setLoading(true);
     setBooking(null);
     setSelectedTable(null);
-
-    const today = minDate();
-    if (selectedDate === today) {
-      const now = new Date();
-      const [hours, minutes] = selectedTime.split(':').map(Number);
-      const selectedTimeMs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes).getTime();
-      const thirtyMinsFromNow = now.getTime() + 30 * 60000;
-      if (selectedTimeMs < thirtyMinsFromNow) {
-        setToast({ type: 'error', message: 'Reservations for today must be made at least 30 minutes in advance.' });
-        setLoading(false);
-        return;
-      }
-    }
 
     try {
       const tables = await getAvailableTables({
@@ -252,11 +240,7 @@ function extractError(error) {
 }
 
 function minDate() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return new Date().toISOString().slice(0, 10);
 }
 
 function formatTime(time) {
