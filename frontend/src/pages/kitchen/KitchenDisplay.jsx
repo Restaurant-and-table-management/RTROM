@@ -38,7 +38,9 @@ function KitchenDisplay() {
       // We only keep mock data if the incoming is null/undefined. 
       // If it's an empty array, it means the backend really has no tickets.
       if (list !== null && list !== undefined) {
-        setTickets(list);
+        const today = new Date().toDateString();
+        const filteredList = list.filter(t => new Date(t.createdAt).toDateString() === today);
+        setTickets(filteredList);
       }
     } catch (err) {
       console.warn('[KDS] API fetch failed (mock data preserved):', err?.message);
@@ -66,10 +68,12 @@ function KitchenDisplay() {
     updateTicket(ticket);
 
     if (isNew && ticket.kitchenStatus === 'RECEIVED') {
-      // Play a subtle notification sound for new orders
-      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
-      audio.volume = 0.4;
-      audio.play().catch(e => console.log('Audio play blocked'));
+      // Play a voice notification for new orders
+      const msg = new SpeechSynthesisUtterance("New order is received");
+      msg.rate = 1.0;
+      msg.pitch = 1.0;
+      msg.volume = 1.0;
+      window.speechSynthesis.speak(msg);
       
       toast.success(`NEW ORDER: Table ${ticket.tableNumber}`, {
         icon: '🔔',

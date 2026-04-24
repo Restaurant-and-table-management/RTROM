@@ -58,7 +58,9 @@ function WaiterPage() {
         categoryApi.getAllCategories()
       ]);
       setTables(Array.isArray(tableData) ? tableData : []);
-      setOrders(Array.isArray(orderData) ? orderData : []);
+      const today = new Date().toDateString();
+      const todayOrders = (Array.isArray(orderData) ? orderData : []).filter(o => new Date(o.createdAt).toDateString() === today);
+      setOrders(todayOrders);
       setMenuItems(menuData?.data && Array.isArray(menuData.data) ? menuData.data : []);
       setCategories(categoryData?.data && Array.isArray(categoryData.data) ? categoryData.data : []);
       setLastUpdated(new Date());

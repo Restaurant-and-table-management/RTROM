@@ -26,6 +26,7 @@ function AdminOrdersPage() {
   const [orderToDelete, setOrderToDelete] = useState(null);
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState('DESC'); // DESC or ASC
 
 
   useEffect(() => {
@@ -79,11 +80,17 @@ function AdminOrdersPage() {
   };
 
 
-  const filteredOrders = orders.filter(o => {
-    const matchStatus = statusFilter === 'ALL' || o.status === statusFilter;
-    const matchSearch = searchQuery === '' || String(o.id).includes(searchQuery);
-    return matchStatus && matchSearch;
-  });
+  const filteredOrders = orders
+    .filter(o => {
+      const matchStatus = statusFilter === 'ALL' || o.status === statusFilter;
+      const matchSearch = searchQuery === '' || String(o.id).includes(searchQuery);
+      return matchStatus && matchSearch;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      return sortOrder === 'DESC' ? dateB - dateA : dateA - dateB;
+    });
 
   return (
     <DashboardShell
@@ -118,6 +125,13 @@ function AdminOrdersPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setSortOrder(prev => prev === 'DESC' ? 'ASC' : 'DESC')}
+            className="flex items-center gap-2 rounded-xl border border-[color:var(--border)] bg-white px-4 py-2 text-sm font-semibold text-[color:var(--text-secondary)] hover:bg-slate-50 transition shadow-sm"
+          >
+            <svg className={`w-4 h-4 transition-transform ${sortOrder === 'ASC' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+            Sort by Date {sortOrder === 'DESC' ? '(Newest)' : '(Oldest)'}
+          </button>
           <div className="text-xs text-slate-500 font-medium bg-slate-100 px-3 py-1.5 rounded-full">
             {(statusFilter !== 'ALL' || searchQuery !== '') ? `${filteredOrders.length} Filtered` : `${orders.length} Total`} Orders
           </div>
@@ -131,6 +145,7 @@ function AdminOrdersPage() {
               <tr className="border-b border-[color:var(--border)] bg-[color:var(--surface-alt)]">
 
                 <th className="px-6 py-4 font-semibold text-[color:var(--text-secondary)]">Order ID</th>
+                <th className="px-6 py-4 font-semibold text-[color:var(--text-secondary)]">Date & Time</th>
                 <th className="px-6 py-4 font-semibold text-[color:var(--text-secondary)]">Table</th>
                 <th className="px-6 py-4 font-semibold text-[color:var(--text-secondary)]">Customer</th>
                 <th className="px-6 py-4 font-semibold text-[color:var(--text-secondary)]">Items</th>
@@ -151,6 +166,14 @@ function AdminOrdersPage() {
                 <tr key={order?.id} className="hover:bg-gray-50 transition-colors">
 
                   <td className="px-6 py-4 font-medium text-[color:var(--primary)]">#{order?.id}</td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm font-medium text-slate-900">
+                      {new Date(order?.createdAt).toLocaleDateString()}
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      {new Date(order?.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </td>
                   <td className="px-6 py-4">{order?.table?.tableNumber || 'N/A'}</td>
                   <td className="px-6 py-4">
                     <div className="font-medium text-slate-900">
@@ -190,7 +213,7 @@ function AdminOrdersPage() {
               ))}
               {filteredOrders.length === 0 && !loading && (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-[color:var(--text-secondary)] italic">
+                  <td colSpan="7" className="px-6 py-12 text-center text-[color:var(--text-secondary)] italic">
                     No orders found.
                   </td>
                 </tr>

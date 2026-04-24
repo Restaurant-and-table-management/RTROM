@@ -158,6 +158,8 @@ public class OrderService {
         }
 
         return order;
+    }
+
     public List<Order> getMyOrders(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
