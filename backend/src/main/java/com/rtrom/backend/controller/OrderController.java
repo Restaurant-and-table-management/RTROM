@@ -34,10 +34,23 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<List<Order>> getMyOrders(java.security.Principal principal) {
+        return ResponseEntity.ok(orderService.getMyOrders(principal.getName()));
+    }
+
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ADMIN', 'WAITER', 'KITCHEN_STAFF')")
     public ResponseEntity<Order> updateOrderStatus(@PathVariable Long id, @RequestParam com.rtrom.backend.domain.model.OrderStatus status) {
         return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
+    }
+
+    @DeleteMapping("/bulk-delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteOrders(@RequestBody List<Long> ids) {
+        orderService.deleteOrders(ids);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

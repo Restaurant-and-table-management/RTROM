@@ -2,8 +2,10 @@ package com.rtrom.backend.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.math.BigDecimal;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(name = "order_items")
 public class OrderItem {
@@ -43,6 +45,7 @@ public class OrderItem {
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
     public MenuItem getMenuItem() { return menuItem; }

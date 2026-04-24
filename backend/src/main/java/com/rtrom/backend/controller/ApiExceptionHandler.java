@@ -23,7 +23,7 @@ public class ApiExceptionHandler {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler({BadRequestException.class, ConstraintViolationException.class, IllegalArgumentException.class})
+    @ExceptionHandler({ BadRequestException.class, ConstraintViolationException.class, IllegalArgumentException.class })
     public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException ex) {
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
@@ -36,10 +36,10 @@ public class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult()
-            .getFieldErrors()
-            .stream()
-            .map(FieldError::getDefaultMessage)
-            .collect(Collectors.joining(", "));
+                .getFieldErrors()
+                .stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
         return buildError(HttpStatus.BAD_REQUEST, message);
     }
 
@@ -50,7 +50,8 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleFallback(Exception ex) {
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected server error");
+        ex.printStackTrace(); // Simple but effective for this environment
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected server error: " + ex.getMessage());
     }
 
     private ResponseEntity<ApiErrorResponse> buildError(HttpStatus status, String message) {

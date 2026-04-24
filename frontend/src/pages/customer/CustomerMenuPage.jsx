@@ -1,29 +1,35 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardShell from '../../components/layout/DashboardShell';
 import useMenuStore from '../../store/menuStore';
 import useCategoryStore from '../../store/categoryStore';
 import useOrderStore from '../../store/orderStore';
 import { getMyReservations } from '../../api/reservationApi';
+import { billService } from '../../api/billService';
 import { createOrder } from '../../api/orderApi';
 import ToastMessage from '../../components/ui/ToastMessage';
 
 const navItems = [
-  { to: '/customer', label: 'Reserve', end: true },
+  { to: '/customer', label: 'Dashboard', end: true },
+  { to: '/customer/reserve', label: 'Reserve' },
   { to: '/customer/menu', label: 'Menu' },
   { to: '/customer/reservations', label: 'My Reservations' },
   { to: '/customer/profile', label: 'Profile' },
 ];
 
 function CustomerMenuPage() {
+  const navigate = useNavigate();
   const { menuItems, fetchMenuItems, isLoading } = useMenuStore();
   const { categories, fetchCategories } = useCategoryStore();
   const { cart, addToCart, removeFromCart, updateQuantity, clearCart, getTotal, tableId, setTableId } = useOrderStore();
   
   const [activeCategory, setActiveCategory] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
   const [imgErrors, setImgErrors] = useState({});
   const [showCart, setShowCart] = useState(false);
   const [reservations, setReservations] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [toast, setToast] = useState({ type: 'error', message: '' });
 
   useEffect(() => {
@@ -80,11 +86,30 @@ function CustomerMenuPage() {
     }
   };
 
+  const handleCheckout = async () => {
+    if (!tableId) return;
+    setIsCheckingOut(true);
+    try {
+      const bill = await billService.checkout(tableId);
+      navigate(`/customer/checkout/${bill.id}`);
+    } catch (error) {
+      setToast({
+        type: 'error',
+        message: error.response?.data?.error || error.response?.data?.message || 'Failed to trigger checkout.'
+      });
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
   const availableItems = menuItems.filter(item => item.available);
   
-  const filteredItems = activeCategory === 'ALL' 
-    ? availableItems 
-    : availableItems.filter(item => item.category?.name === activeCategory);
+  const filteredItems = availableItems.filter(item => {
+    const matchesCategory = activeCategory === 'ALL' || item.category?.name === activeCategory;
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <DashboardShell title="Digital Menu" subtitle="Browse our finest selections and place your order directly." navItems={navItems}>
@@ -106,9 +131,39 @@ function CustomerMenuPage() {
           )}
         </button>
       </div>
+
+      {/* Checkout Button (only if table assigned) */}
+      {tableId && (
+        <div className="fixed bottom-8 left-8 z-40">
+          <button 
+            onClick={handleCheckout}
+            disabled={isCheckingOut}
+            className="group flex h-14 items-center gap-3 rounded-full bg-emerald-600 px-6 text-white shadow-2xl transition-all hover:bg-emerald-700 hover:scale-105 active:scale-95 disabled:opacity-50"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            <span className="font-bold">{isCheckingOut ? 'Processing...' : 'Checkout Table'}</span>
+          </button>
+        </div>
+      )}
       
-      {/* Category Navigation */}
-      <div className="mb-8 flex flex-wrap gap-3">
+      {/* Search and Category Navigation */}
+      <div className="mb-8 flex flex-col gap-4">
+        <div className="relative w-full max-w-md">
+          <input
+            type="text"
+            placeholder="Search menu items..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="input w-full pl-10 pr-4 py-3 rounded-full border border-gray-300 shadow-sm focus:border-[color:var(--accent)] focus:ring-[color:var(--accent)]"
+          />
+          <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        
+        <div className="flex flex-wrap gap-3">
         <button
           onClick={() => setActiveCategory('ALL')}
           className={`px-5 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all duration-300 transform outline-none ${
@@ -132,6 +187,7 @@ function CustomerMenuPage() {
             {cat.name}
           </button>
         ))}
+        </div>
       </div>
 
       {isLoading ? (
@@ -188,9 +244,7 @@ function CustomerMenuPage() {
                 </div>
                 
                 <div className="mt-6 flex items-center justify-between">
-                  <p className="text-2xl font-black text-[color:var(--primary)]">
-                    ${item.price.toFixed(2)}
-                  </p>
+                    Rs {item.price.toFixed(2)}
                   
                   <button 
                     onClick={() => addToCart(item)}
@@ -258,7 +312,7 @@ function CustomerMenuPage() {
                         </div>
                         <div className="flex-1">
                           <h4 className="font-bold">{item.name}</h4>
-                          <p className="text-sm text-[color:var(--text-secondary)]">${item.price.toFixed(2)}</p>
+                          <p className="text-sm text-[color:var(--text-secondary)]">Rs {item.price.toFixed(2)}</p>
                           <div className="mt-2 flex items-center gap-3">
                             <button onClick={() => updateQuantity(item.id, -1)} className="h-6 w-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100">-</button>
                             <span className="text-sm font-medium">{item.quantity}</span>
@@ -296,7 +350,7 @@ function CustomerMenuPage() {
 
                 <div className="flex items-center justify-between text-xl font-bold mb-6">
                   <span>Total</span>
-                  <span className="text-[color:var(--primary)]">${getTotal().toFixed(2)}</span>
+                  <span className="text-[color:var(--primary)]">Rs {getTotal().toFixed(2)}</span>
                 </div>
                 
                 <button 

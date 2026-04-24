@@ -71,7 +71,8 @@ const MenuManagementPage = () => {
 
   const filteredItems = menuItems.filter(item => {
     const matchCategory = filterCategory === 'ALL' || item.category?.name === filterCategory;
-    const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchCategory && matchSearch;
   });
 
@@ -186,7 +187,7 @@ const MenuManagementPage = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${typeof item.price === 'number' ? item.price.toFixed(2) : parseFloat(item.price).toFixed(2)}
+                      Rs {typeof item.price === 'number' ? item.price.toFixed(2) : parseFloat(item.price).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button 

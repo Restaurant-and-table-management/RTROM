@@ -10,6 +10,11 @@ export async function getOrders() {
   return response.data;
 }
 
+export async function getMyOrders() {
+  const response = await apiClient.get('/orders/me');
+  return response.data;
+}
+
 export async function updateOrderStatus(orderId, status) {
   const response = await apiClient.patch(`/orders/${orderId}/status`, null, {
     params: { status }
@@ -19,5 +24,10 @@ export async function updateOrderStatus(orderId, status) {
 
 export async function deleteOrder(orderId) {
   const response = await apiClient.delete(`/orders/${orderId}`);
+  return response.data;
+}
+
+export async function deleteOrders(orderIds) {
+  const response = await apiClient.delete('/orders/bulk-delete', { data: orderIds });
   return response.data;
 }
