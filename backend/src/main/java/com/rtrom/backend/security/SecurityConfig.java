@@ -45,17 +45,15 @@ public class SecurityConfig {
                 .accessDeniedHandler(customAccessDeniedHandler)
             )
             .authorizeHttpRequests(auth -> auth
-.authorizeHttpRequests(auth -> auth
-    .requestMatchers(
-        "/api/auth/**",
-        "/api/chatbot/**",
-        "/api/reviews/public",
-        "/actuator/health",
-        "/error",
-        "/ws/**"
-    ).permitAll()
-    .anyRequest().authenticated()
-)
+                .requestMatchers(
+                    "/api/auth/**",
+                    "/api/chatbot/**",
+                    "/api/reviews/public",
+                    "/actuator/health",
+                    "/error",
+                    "/ws/**"
+                ).permitAll()
+                .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

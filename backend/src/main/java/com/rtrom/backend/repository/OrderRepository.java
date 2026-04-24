@@ -9,7 +9,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT DISTINCT o FROM Order o JOIN FETCH o.table LEFT JOIN FETCH o.user LEFT JOIN FETCH o.items i LEFT JOIN FETCH i.menuItem")
     List<Order> findAllWithDetails();
 
-    List<Order> findByTableIdAndStatusIn(Long tableId, java.util.Collection<com.rtrom.backend.domain.model.OrderStatus> statuses);
+    List<Order> findByTableIdAndStatusIn(Long tableId,
+            java.util.Collection<com.rtrom.backend.domain.model.OrderStatus> statuses);
 
     List<Order> findByTableIdAndStatusNot(Long tableId, com.rtrom.backend.domain.model.OrderStatus status);
 
