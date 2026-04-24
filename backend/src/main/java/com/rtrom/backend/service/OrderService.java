@@ -149,6 +149,15 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    public Order getTrackableOrder(Long orderId, String userEmail) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        if (userEmail != null && !userEmail.equalsIgnoreCase(order.getUser().getEmail())) {
+            throw new ResourceNotFoundException("Order not found");
+        }
+
+        return order;
     public List<Order> getMyOrders(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
