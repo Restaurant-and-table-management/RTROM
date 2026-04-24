@@ -94,6 +94,18 @@ public class OrderService {
         return orderRepository.findAllWithDetails();
     }
 
+    @Transactional(readOnly = true)
+    public Order getTrackableOrder(Long orderId, String userEmail) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        if (userEmail != null && !userEmail.equalsIgnoreCase(order.getUser().getEmail())) {
+            throw new ResourceNotFoundException("Order not found");
+        }
+
+        return order;
+    }
+
     @Transactional
     public Order updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)

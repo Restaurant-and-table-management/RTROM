@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AuthRedirectRoute from './components/routing/AuthRedirectRoute';
+import Chatbot from './components/Chatbot';
 import ProtectedRoute from './components/routing/ProtectedRoute';
 import RoleHomeRedirect from './components/routing/RoleHomeRedirect';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
@@ -60,6 +61,8 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      <Chatbot />
     </div>
   );
 }
