@@ -49,3 +49,8 @@ app:
     secret-key: ${STRIPE_SECRET_KEY:}
     publisher-key: ${STRIPE_PUBLISHER_KEY:}
 
+  chatbot:
+    restaurant-name: ${CHATBOT_RESTAURANT_NAME:RTROM Restaurant}
+    location: ${CHATBOT_LOCATION:MG Road, Bengaluru}
+    contact: ${CHATBOT_CONTACT:+91 98765 43210}
+    timings: ${CHATBOT_TIMINGS:Mon-Sun, 11:00 AM - 11:00 PM}
