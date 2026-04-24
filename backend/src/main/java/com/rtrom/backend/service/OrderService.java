@@ -230,7 +230,8 @@ public class OrderService {
                                 ticket.getId(), newKitchenStatus);
                     }
                 } else if (status != OrderStatus.SERVED) {
-                    // Re-create kitchen ticket if it was deleted (e.g. order moved from PAID back to PENDING)
+                    // Re-create kitchen ticket if it was deleted (e.g. order moved from PAID back
+                    // to PENDING)
                     kitchenService.createTicketForOrder(order);
                     logger.info("Order {} moved back to {}. Kitchen ticket re-created.", orderId, status);
                 }

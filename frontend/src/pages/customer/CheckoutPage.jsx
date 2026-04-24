@@ -47,59 +47,81 @@ const CheckoutPage = () => {
   const isBelowOnlinePaymentMinimum = Number(bill.grandTotal ?? 0) < MIN_ONLINE_PAYMENT_INR;
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] p-8 text-[var(--text-primary)]">
-      <div className="mx-auto max-w-2xl overflow-hidden rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-lg">
-        <div className="border-b border-[var(--border-color)] p-6">
-          <h2 className="text-center text-2xl font-bold">Checkout Summary</h2>
-          <p className="mt-1 text-center text-sm text-[var(--text-secondary)]">Bill #{bill.billNumber}</p>
+    <div className="min-h-screen relative flex items-center justify-center p-8 overflow-hidden font-sans">
+      {/* Background Image with Cinematic Overlay */}
+      <div 
+        className="absolute inset-0 z-0 bg-cover bg-center transition-all duration-700 scale-105"
+        style={{ 
+          backgroundImage: `url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')`,
+        }}
+      />
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+
+      {/* Glassmorphic Checkout Card */}
+      <div className="relative z-10 w-full max-w-2xl backdrop-blur-xl bg-black/40 rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden text-white animate-in fade-in zoom-in duration-500">
+        <div className="border-b border-white/10 p-8 text-center">
+          <h2 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-white">
+            Checkout Summary
+          </h2>
+          <div className="mt-2 inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-indigo-200 uppercase tracking-widest">
+            Bill #{bill.billNumber}
+          </div>
         </div>
 
-        <div className="space-y-4 p-6">
-          <div className="flex items-center justify-between py-2">
-            <span className="font-medium">Subtotal</span>
-            <span>Rs {bill.subtotal.toFixed(2)}</span>
+        <div className="p-8 space-y-6">
+          <div className="flex items-center justify-between py-1">
+            <span className="text-indigo-100/60 font-medium">Subtotal</span>
+            <span className="text-xl font-light">Rs {bill.subtotal.toFixed(2)}</span>
           </div>
-          <div className="flex items-center justify-between py-2 text-[var(--text-secondary)]">
-            <span>Tax (5%)</span>
-            <span>Rs {bill.tax.toFixed(2)}</span>
+          <div className="flex items-center justify-between py-1">
+            <span className="text-indigo-100/60 font-medium">Tax (5%)</span>
+            <span className="text-xl font-light text-indigo-200/80">Rs {bill.tax.toFixed(2)}</span>
           </div>
-          <div className="flex items-center justify-between border-b border-[var(--border-color)] py-2 pb-4 text-[var(--text-secondary)]">
-            <span>Discount</span>
-            <span>- Rs {bill.discount.toFixed(2)}</span>
+          <div className="flex items-center justify-between py-1 text-red-300/80">
+            <span className="font-medium">Discount</span>
+            <span className="text-xl font-light">- Rs {bill.discount.toFixed(2)}</span>
           </div>
-          <div className="flex items-center justify-between py-4 text-xl font-bold text-[var(--accent-primary)]">
-            <span>Grand Total</span>
-            <span>Rs {bill.grandTotal.toFixed(2)}</span>
+          
+          <div className="mt-4 pt-6 border-t border-white/10 flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-indigo-300/60 font-bold mb-1">Total Amount Due</p>
+              <h3 className="text-4xl font-black text-white tracking-tighter">
+                Rs {bill.grandTotal.toFixed(2)}
+              </h3>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30">
+              <svg className="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
           </div>
+
           {isBelowOnlinePaymentMinimum && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-              Online card payments require a bill total of at least Rs 50.00 because of Stripe&apos;s minimum charge.
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-6 py-4 text-sm text-amber-200 flex items-start gap-3">
+              <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p>Online card payments require a bill total of at least Rs 50.00 because of Stripe&apos;s minimum charge requirement.</p>
             </div>
           )}
         </div>
 
-        <div className="flex justify-end gap-4 bg-[var(--bg-tertiary)] p-6">
+        <div className="bg-white/5 p-8 flex items-center justify-between border-t border-white/10">
           <button
             onClick={() => navigate(-1)}
-            className="rounded-lg bg-gray-500 px-6 py-2 text-white transition-colors hover:bg-gray-600"
+            className="text-sm font-bold text-white/40 hover:text-white transition-all duration-200 uppercase tracking-widest"
           >
-            Cancel
+            Go Back
           </button>
           <button
             onClick={proceedToPayment}
             disabled={isBelowOnlinePaymentMinimum}
-            className="relative rounded-xl px-6 py-2.5 
-  bg-gradient-to-r from-indigo-500 to-indigo-600 
-  text-white font-semibold tracking-wide
-  shadow-lg shadow-indigo-500/20
-  transition-all duration-200
-
-  hover:from-indigo-400 hover:to-indigo-500 hover:shadow-xl
-  active:scale-[0.97]
-
-  disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:from-indigo-500 disabled:hover:to-indigo-600"
+            className="px-10 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:from-gray-700 disabled:to-gray-800 text-white rounded-2xl font-bold shadow-2xl shadow-indigo-500/20 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group flex items-center gap-2"
           >
-            Proceed to Payment
+            <span>Confirm & Pay Now</span>
+            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
           </button>
         </div>
       </div>

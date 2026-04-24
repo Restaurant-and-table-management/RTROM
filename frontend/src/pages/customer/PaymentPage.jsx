@@ -74,18 +74,18 @@ const CheckoutForm = ({ clientSecret, paymentId }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="p-4 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)]">
+      <div className="p-4 border border-white/10 rounded-xl bg-white/5 backdrop-blur-sm">
         <CardElement options={{
           style: {
             base: {
               fontSize: '16px',
-              color: 'var(--text-primary)',
+              color: '#ffffff',
               '::placeholder': {
-                color: 'var(--text-secondary)',
+                color: 'rgba(255, 255, 255, 0.4)',
               },
             },
             invalid: {
-              color: '#ef4444',
+              color: '#fb7185',
             },
           },
         }} />
@@ -154,12 +154,37 @@ const PaymentPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] p-8 text-[var(--text-primary)]">
-      <div className="max-w-md mx-auto bg-[var(--bg-secondary)] rounded-xl shadow-lg border border-[var(--border-color)] overflow-hidden p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">Secure Payment</h2>
+    <div className="min-h-screen relative flex items-center justify-center p-8 overflow-hidden font-sans">
+      {/* Background Image with Cinematic Overlay */}
+      <div 
+        className="absolute inset-0 z-0 bg-cover bg-center transition-all duration-700 scale-105"
+        style={{ 
+          backgroundImage: `url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')`,
+        }}
+      />
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/60 via-transparent to-black/80" />
+
+      {/* Glassmorphic Payment Card */}
+      <div className="relative z-10 w-full max-w-md backdrop-blur-2xl bg-black/40 rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden text-white p-8 animate-in fade-in zoom-in duration-500">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-indigo-500/20 rounded-full flex items-center justify-center border border-indigo-500/30 mx-auto mb-4">
+            <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h2 className="text-3xl font-black tracking-tight text-white">Secure Payment</h2>
+          <p className="text-indigo-200/60 text-sm mt-1 uppercase tracking-widest font-bold">Transaction Encrypted</p>
+        </div>
+
         <Elements stripe={stripePromise}>
           <CheckoutForm clientSecret={clientSecret} paymentId={paymentId} />
         </Elements>
+
+        <div className="mt-8 flex items-center justify-center gap-4 text-white/20">
+          <svg className="h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M1 4h22v16H1z"/></svg>
+          <svg className="h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M1 4h22v16H1z"/></svg>
+          <svg className="h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M1 4h22v16H1z"/></svg>
+        </div>
       </div>
     </div>
   );
