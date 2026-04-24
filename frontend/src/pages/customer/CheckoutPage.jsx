@@ -88,7 +88,16 @@ const CheckoutPage = () => {
           <button
             onClick={proceedToPayment}
             disabled={isBelowOnlinePaymentMinimum}
-            className="rounded-lg bg-[var(--accent-primary)] px-6 py-2 font-medium text-white shadow-md transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+            className="relative rounded-xl px-6 py-2.5 
+  bg-gradient-to-r from-indigo-500 to-indigo-600 
+  text-white font-semibold tracking-wide
+  shadow-lg shadow-indigo-500/20
+  transition-all duration-200
+
+  hover:from-indigo-400 hover:to-indigo-500 hover:shadow-xl
+  active:scale-[0.97]
+
+  disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:from-indigo-500 disabled:hover:to-indigo-600"
           >
             Proceed to Payment
           </button>

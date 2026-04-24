@@ -16,6 +16,9 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import jakarta.persistence.Convert;
+import com.rtrom.backend.config.converter.LocalTimeConverter;
+import com.rtrom.backend.config.converter.LocalDateTimeConverter;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
@@ -38,9 +41,11 @@ public class Reservation {
     private LocalDate reservationDate;
 
     @Column(nullable = false)
+    @Convert(converter = LocalTimeConverter.class)
     private LocalTime startTime;
 
     @Column(nullable = false)
+    @Convert(converter = LocalTimeConverter.class)
     private LocalTime endTime;
 
     @Column(nullable = false)
@@ -54,6 +59,7 @@ public class Reservation {
     private String specialRequests;
 
     @Column(nullable = false, updatable = false)
+    @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime createdAt;
 
     @PrePersist

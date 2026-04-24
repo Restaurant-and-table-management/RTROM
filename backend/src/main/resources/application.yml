@@ -43,5 +43,9 @@ app:
     issuer: ${JWT_ISSUER:rtrom-backend}
 
   websocket:
-    allowed-origins: "http://localhost:5173"
+    allowed-origins: ${WEBSOCKET_ALLOWED_ORIGINS:http://localhost:5173}
+
+  stripe:
+    secret-key: ${STRIPE_SECRET_KEY:}
+    publisher-key: ${STRIPE_PUBLISHER_KEY:}
 

@@ -67,8 +67,8 @@ const CheckoutForm = ({ clientSecret, paymentId }) => {
         setIsProcessing(false);
       }
     } else {
-        setIsProcessing(false);
-        toast.error("Payment failed. Try again.");
+      setIsProcessing(false);
+      toast.error("Payment failed. Try again.");
     }
   };
 
@@ -76,24 +76,30 @@ const CheckoutForm = ({ clientSecret, paymentId }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="p-4 border border-[var(--border-color)] rounded-lg bg-[var(--bg-primary)]">
         <CardElement options={{
-            style: {
-                base: {
-                    fontSize: '16px',
-                    color: 'var(--text-primary)',
-                    '::placeholder': {
-                        color: 'var(--text-secondary)',
-                    },
-                },
-                invalid: {
-                    color: '#ef4444',
-                },
+          style: {
+            base: {
+              fontSize: '16px',
+              color: 'var(--text-primary)',
+              '::placeholder': {
+                color: 'var(--text-secondary)',
+              },
             },
-        }}/>
+            invalid: {
+              color: '#ef4444',
+            },
+          },
+        }} />
       </div>
-      <button 
-        type="submit" 
+      <button
+        type="submit"
         disabled={!stripe || isProcessing}
-        className="w-full py-3 rounded-lg bg-[var(--accent-primary)] hover:bg-blue-600 text-white font-bold transition-colors disabled:opacity-50"
+        className="w-full py-3 rounded-xl 
+bg-gradient-to-r from-indigo-500 to-indigo-600
+text-white font-semibold
+shadow-lg hover:shadow-xl
+hover:scale-[1.02] active:scale-[0.98]
+disabled:opacity-50 disabled:cursor-not-allowed
+transition-all duration-200"
       >
         {isProcessing ? 'Processing...' : 'Pay Now'}
       </button>
