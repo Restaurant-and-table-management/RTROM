@@ -10,7 +10,8 @@ import { createOrder } from '../../api/orderApi';
 import ToastMessage from '../../components/ui/ToastMessage';
 
 const navItems = [
-  { to: '/customer', label: 'Reserve', end: true },
+  { to: '/customer', label: 'Dashboard', end: true },
+  { to: '/customer/reserve', label: 'Reserve' },
   { to: '/customer/menu', label: 'Menu' },
   { to: '/customer/reservations', label: 'My Reservations' },
   { to: '/customer/profile', label: 'Profile' },
@@ -23,6 +24,7 @@ function CustomerMenuPage() {
   const { cart, addToCart, removeFromCart, updateQuantity, clearCart, getTotal, tableId, setTableId } = useOrderStore();
   
   const [activeCategory, setActiveCategory] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
   const [imgErrors, setImgErrors] = useState({});
   const [showCart, setShowCart] = useState(false);
   const [reservations, setReservations] = useState([]);
@@ -102,9 +104,12 @@ function CustomerMenuPage() {
 
   const availableItems = menuItems.filter(item => item.available);
   
-  const filteredItems = activeCategory === 'ALL' 
-    ? availableItems 
-    : availableItems.filter(item => item.category?.name === activeCategory);
+  const filteredItems = availableItems.filter(item => {
+    const matchesCategory = activeCategory === 'ALL' || item.category?.name === activeCategory;
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <DashboardShell title="Digital Menu" subtitle="Browse our finest selections and place your order directly." navItems={navItems}>
@@ -143,8 +148,22 @@ function CustomerMenuPage() {
         </div>
       )}
       
-      {/* Category Navigation */}
-      <div className="mb-8 flex flex-wrap gap-3">
+      {/* Search and Category Navigation */}
+      <div className="mb-8 flex flex-col gap-4">
+        <div className="relative w-full max-w-md">
+          <input
+            type="text"
+            placeholder="Search menu items..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="input w-full pl-10 pr-4 py-3 rounded-full border border-gray-300 shadow-sm focus:border-[color:var(--accent)] focus:ring-[color:var(--accent)]"
+          />
+          <svg className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        
+        <div className="flex flex-wrap gap-3">
         <button
           onClick={() => setActiveCategory('ALL')}
           className={`px-5 py-2.5 rounded-full text-sm font-bold tracking-wide transition-all duration-300 transform outline-none ${
@@ -168,6 +187,7 @@ function CustomerMenuPage() {
             {cat.name}
           </button>
         ))}
+        </div>
       </div>
 
       {isLoading ? (

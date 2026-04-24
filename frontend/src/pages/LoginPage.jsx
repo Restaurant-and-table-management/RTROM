@@ -45,6 +45,8 @@ function LoginPage() {
       const response = await apiClient.post('/auth/login', { email, password, remember });
       const token = response?.data?.token;
       const role = normalizeRole(response?.data?.role);
+      const firstName = response?.data?.firstName;
+      const lastName = response?.data?.lastName;
 
       if (!token || !role) {
         throw new Error('Invalid login response from server');
@@ -53,7 +55,7 @@ function LoginPage() {
       setAuthData({
         token,
         role,
-        user: { email },
+        user: { email, firstName, lastName },
       });
 
       navigate(getDefaultRouteByRole(role), { replace: true });
@@ -113,8 +115,8 @@ function LoginPage() {
   };
 
   return (
-    <main className="auth-page min-h-screen px-4 py-12 md:px-8">
-      <section className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-2xl border border-[color:var(--border)] bg-white shadow-[var(--shadow-lg)] md:grid-cols-[1.1fr_1fr]">
+    <main className="auth-page min-h-screen px-4 py-12 md:px-8 flex items-center justify-center">
+      <section className="mx-auto grid w-[85%] max-w-[1200px] min-h-[80vh] overflow-hidden rounded-2xl border border-[color:var(--border)] bg-white shadow-[var(--shadow-lg)] md:grid-cols-[1.1fr_1fr]">
         <aside className="hidden bg-[color:var(--primary)] p-10 text-white md:flex md:flex-col md:items-center md:justify-center">
           <img src="/logo.png" alt="LuxeServe" className="mx-auto h-28 w-28 rounded-2xl bg-white/10 object-contain p-3 shadow-lg backdrop-blur-sm" />
           <h1 className="mt-6 text-center font-heading text-4xl">LuxeServe</h1>

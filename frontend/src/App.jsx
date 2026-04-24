@@ -9,7 +9,9 @@ import TableManagement from './pages/admin/TableManagement';
 import UserManagementPage from './pages/admin/UserManagementPage';
 import MenuManagementPage from './pages/admin/MenuManagementPage';
 import AnalyticsPage from './pages/admin/AnalyticsPage';
+import AdminReviewsPage from './pages/admin/AdminReviewsPage';
 import CheckoutPage from './pages/customer/CheckoutPage';
+import CustomerDashboardPage from './pages/customer/CustomerDashboardPage';
 import CustomerMenuPage from './pages/customer/CustomerMenuPage';
 import CustomerProfilePage from './pages/customer/CustomerProfilePage';
 import MyReservations from './pages/customer/MyReservations';
@@ -43,10 +45,12 @@ function App() {
           <Route path="/admin/menu" element={<MenuManagementPage />} />
           <Route path="/admin/users" element={<UserManagementPage />} />
           <Route path="/admin/analytics" element={<AnalyticsPage />} />
+          <Route path="/admin/reviews" element={<AdminReviewsPage />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={[ROLES.CUSTOMER]} />}>
-          <Route path="/customer" element={<ReservePage />} />
+          <Route path="/customer" element={<CustomerDashboardPage />} />
+          <Route path="/customer/reserve" element={<ReservePage />} />
           <Route path="/customer/menu" element={<CustomerMenuPage />} />
           <Route path="/customer/reservations" element={<MyReservations />} />
           <Route path="/customer/profile" element={<CustomerProfilePage />} />

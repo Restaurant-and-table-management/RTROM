@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Modifying
     @Query("DELETE FROM Payment p WHERE p.bill.sourceOrder.user.id = :userId")
-    void deleteByOrderUserId(@Param("userId") Long userId);
+    void deleteBySourceOrderUserId(@Param("userId") Long userId);
 }

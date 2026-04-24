@@ -11,11 +11,11 @@ import java.util.Optional;
 
 @Repository
 public interface BillRepository extends JpaRepository<Bill, Long> {
-    Optional<Bill> findBySourceOrderId(Long orderId);
+    Optional<Bill> findBySourceOrderId(Long sourceOrderId);
 
     java.util.Optional<Bill> findByTableIdAndStatus(Long tableId, String status);
 
     @Modifying
     @Query("DELETE FROM Bill b WHERE b.sourceOrder.user.id = :userId")
-    void deleteByOrderUserId(@Param("userId") Long userId);
+    void deleteBySourceOrderUserId(@Param("userId") Long userId);
 }

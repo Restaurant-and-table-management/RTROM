@@ -13,6 +13,7 @@ public class BillDto {
     private BigDecimal tax;
     private BigDecimal discount;
     private BigDecimal grandTotal;
+    private BigDecimal totalAmount;
     private String status;
     private LocalDateTime createdAt;
 
@@ -24,14 +25,17 @@ public class BillDto {
     public String getBillNumber() { return billNumber; }
     public void setBillNumber(String billNumber) { this.billNumber = billNumber; }
 
-    public Long getOrderId() { return orderId; }
-    public void setOrderId(Long orderId) { this.orderId = orderId; }
-
     public Long getTableId() { return tableId; }
     public void setTableId(Long tableId) { this.tableId = tableId; }
 
     public Long getReservationId() { return reservationId; }
     public void setReservationId(Long reservationId) { this.reservationId = reservationId; }
+
+    public Long getOrderId() { return orderId; }
+    public void setOrderId(Long orderId) { this.orderId = orderId; }
+
+    public BigDecimal getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
 
     public BigDecimal getSubtotal() { return subtotal; }
     public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
@@ -60,9 +64,10 @@ public class BillDto {
 
         public BillDtoBuilder id(Long id) { dto.setId(id); return this; }
         public BillDtoBuilder billNumber(String billNumber) { dto.setBillNumber(billNumber); return this; }
-        public BillDtoBuilder orderId(Long orderId) { dto.setOrderId(orderId); return this; }
         public BillDtoBuilder tableId(Long tableId) { dto.setTableId(tableId); return this; }
         public BillDtoBuilder reservationId(Long reservationId) { dto.setReservationId(reservationId); return this; }
+        public BillDtoBuilder orderId(Long orderId) { dto.setOrderId(orderId); return this; }
+        public BillDtoBuilder totalAmount(BigDecimal totalAmount) { dto.setTotalAmount(totalAmount); return this; }
         public BillDtoBuilder subtotal(BigDecimal subtotal) { dto.setSubtotal(subtotal); return this; }
         public BillDtoBuilder tax(BigDecimal tax) { dto.setTax(tax); return this; }
         public BillDtoBuilder discount(BigDecimal discount) { dto.setDiscount(discount); return this; }

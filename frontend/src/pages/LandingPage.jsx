@@ -77,6 +77,12 @@ function LandingPage() {
     []
   );
 
+  const platformReviews = [
+    { id: 'p1', reviewerName: 'Alex Rivera', restaurantName: 'The Golden Fork', rating: 5, comment: 'LuxeServe transformed our operations. We saw a 30% increase in table turnover within the first month!' },
+    { id: 'p2', reviewerName: 'Elena Sofia', restaurantName: 'Bistro 22', rating: 5, comment: 'The reservation system is flawless. Our guests love the instant confirmations and we love the conflict prevention.' },
+    { id: 'p3', reviewerName: 'Marcus T.', restaurantName: 'Urban Grill', rating: 5, comment: 'Digital ordering reduced our errors to zero. The kitchen staff is much happier and more efficient now.' }
+  ];
+
   return (
     <div className="bg-[color:var(--surface)] text-[color:var(--text-primary)]">
       <MarketingNavbar />
@@ -188,33 +194,19 @@ function LandingPage() {
 
       <section className="bg-[color:var(--surface-alt)] px-6 py-24 md:px-10">
         <div className="mx-auto max-w-7xl">
-          <h2 className="font-heading text-center text-4xl text-[color:var(--primary)] md:text-5xl">Loved by Growing Restaurants</h2>
+          <h2 className="font-heading text-center text-4xl text-[color:var(--primary)] md:text-5xl">What Our Customers Say</h2>
           <div className="mt-14 grid gap-5 md:grid-cols-3">
-            {[
-              {
-                quote: 'LuxeServe cut our table wait times by half and our staff finally feels in sync every shift.',
-                name: 'Ariana Lopez',
-                restaurant: 'Cedar Bistro',
-              },
-              {
-                quote: 'Reservations, menu updates, and service handoffs now happen without chaos.',
-                name: 'Marcus Chen',
-                restaurant: 'Lotus & Grain',
-              },
-              {
-                quote: 'The dashboards made decisions obvious. We improved throughput in just two weeks.',
-                name: 'Nina Patel',
-                restaurant: 'North Dock Kitchen',
-              },
-            ].map((testimonial) => (
-              <article key={testimonial.name} className="rounded-xl border border-[color:var(--border)] bg-white p-6 shadow-[var(--shadow-sm)]">
-                <p className="mb-3 text-amber-400">★★★★★</p>
-                <p className="text-sm leading-relaxed text-[color:var(--text-secondary)]">“{testimonial.quote}”</p>
+            {platformReviews.map((testimonial) => (
+              <article key={testimonial.id || testimonial.reviewerName} className="rounded-xl border border-[color:var(--border)] bg-white p-6 shadow-[var(--shadow-sm)]">
+                <p className="mb-3 text-amber-400">
+                  {'★'.repeat(testimonial.rating || 5)}{'☆'.repeat(5 - (testimonial.rating || 5))}
+                </p>
+                <p className="text-sm leading-relaxed text-[color:var(--text-secondary)]">“{testimonial.comment}”</p>
                 <div className="mt-5 flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-[color:var(--primary-light)]" />
                   <div>
-                    <p className="text-sm font-semibold text-[color:var(--text-primary)]">{testimonial.name}</p>
-                    <p className="text-xs text-[color:var(--text-muted)]">{testimonial.restaurant}</p>
+                    <p className="text-sm font-semibold text-[color:var(--text-primary)]">{testimonial.reviewerName}</p>
+                    <p className="text-xs text-[color:var(--text-muted)]">{testimonial.restaurantName}</p>
                   </div>
                 </div>
               </article>

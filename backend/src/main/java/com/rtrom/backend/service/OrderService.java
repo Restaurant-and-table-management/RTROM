@@ -148,6 +148,13 @@ public class OrderService {
         return orderRepository.findAllWithDetails();
     }
 
+    @Transactional(readOnly = true)
+    public List<Order> getMyOrders(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+        return orderRepository.findByUserId(user.getId());
+    }
+
     @Transactional
     public Order updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
@@ -232,7 +239,7 @@ public class OrderService {
         logger.info("Deleting order {} and its associated data.", orderId);
 
         // 1. Delete associated payments/bills if they exist
-        paymentRepository.deleteByOrderUserId(order.getUser().getId()); // This is a bit broad, should be by order
+        paymentRepository.deleteBySourceOrderUserId(order.getUser().getId()); // This is a bit broad, should be by order
         // Better: add specific delete methods to repositories if needed.
         // For now, let's at least handle the kitchen ticket which is the most common
         // blocker.
